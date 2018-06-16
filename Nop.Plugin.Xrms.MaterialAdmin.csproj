@@ -88,14 +88,14 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Components\" />
+    <Folder Include="Models\" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\Libraries\Nop.Core\Nop.Core.csproj" />
     <ProjectReference Include="..\..\Libraries\Nop.Data\Nop.Data.csproj" />
     <ProjectReference Include="..\..\Libraries\Nop.Services\Nop.Services.csproj" />
     <ProjectReference Include="..\..\Presentation\Nop.Web.Framework\Nop.Web.Framework.csproj" />
     <ProjectReference Include="..\..\Presentation\Nop.Web\Nop.Web.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Components\" />
-    <Folder Include="Models\" />
   </ItemGroup>
 </Project>
