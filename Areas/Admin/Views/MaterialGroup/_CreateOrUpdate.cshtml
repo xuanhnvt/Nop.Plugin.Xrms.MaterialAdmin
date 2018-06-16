@@ -1,0 +1,31 @@
+﻿@model MaterialGroupDetailsPageViewModel
+@inject IEventPublisher eventPublisher
+
+<div asp-validation-summary="All"></div>
+<!--<input asp-for="Id" type="hidden" />-->
+
+<div class="content">
+    <div class="form-horizontal">
+        <div class="row">
+            <div class="col-md-12 clearfix">
+                <div class="pull-left">
+                    @await Component.InvokeAsync("SettingMode", new { modeName = "material-group-advanced-mode" })
+                </div>
+            </div>
+        </div>
+        <nop-tabs id="material-group-edit">
+            <nop-tab asp-name="tab-info" asp-title="@T("Xrms.Admin.Catalog.MaterialGroups.Details.Tabs.Info")" asp-default="true">@await Html.PartialAsync("~/Plugins/Xrms.MaterialAdmin/Areas/Admin/Views/MaterialGroup/_CreateOrUpdate.Info.cshtml", Model)</nop-tab>
+            <nop-tab asp-name="tab-products" asp-title="@T("Xrms.Admin.Catalog.MaterialGroups.Details.Tabs.Materials")">@await Html.PartialAsync("~/Plugins/Xrms.MaterialAdmin/Areas/Admin/Views/MaterialGroup/_CreateOrUpdate.Materials.cshtml", Model)</nop-tab>
+        </nop-tabs>
+    </div>
+</div>
+
+@*@{
+        //custom tabs
+        var eventMessage = new AdminTabStripCreated(this.Html, "material-group-edit");
+        eventPublisher.Publish(eventMessage);
+        foreach (var eventBlock in eventMessage.BlocksToRender)
+        {
+            @eventBlock
+        }
+    }*@

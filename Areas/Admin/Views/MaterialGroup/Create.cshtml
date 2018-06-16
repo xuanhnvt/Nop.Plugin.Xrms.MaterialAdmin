@@ -1,0 +1,62 @@
+﻿@model MaterialGroupDetailsPageViewModel
+@{
+    Layout = "_AdminLayout";
+
+    //page title
+    ViewBag.Title = T("Xrms.Admin.Catalog.MaterialGroups.Details.Create.Title").Text;
+    //active menu item (system name)
+    Html.SetActiveMenuItemSystemName("MaterialGroups");
+}
+
+<form asp-controller="MaterialGroup" asp-action="Create" method="post" id="material-group-form">
+    <div class="content-header clearfix">
+        <h1 class="pull-left">
+            @T("Xrms.Admin.Catalog.MaterialGroups.Details.Create.Title")
+            <small>
+                <i class="fa fa-arrow-circle-left"></i>
+                <a asp-action="List">@T("Xrms.Admin.Catalog.MaterialGroups.Details.Buttons.BackToList")</a>
+            </small>
+        </h1>
+        <div class="pull-right">
+            <button type="submit" id="save-group" name="save" class="btn bg-blue">
+                <i class="fa fa-floppy-o"></i>
+                @T("Admin.Common.Save")
+            </button>
+            <button type="submit" name="save-continue" class="btn bg-blue">
+                <i class="fa fa-floppy-o"></i>
+                @T("Admin.Common.SaveContinue")
+            </button>
+            @await Component.InvokeAsync("AdminWidget", new { widgetZone = "admin_material_group_details_buttons" })
+        </div>
+    </div>
+    @await Html.PartialAsync("~/Plugins/Xrms.MaterialAdmin/Areas/Admin/Views/MaterialGroup/_CreateOrUpdate.cshtml", Model)
+    <!--<script type="text/javascript">
+            //delete selected
+            $('#save-group').click(function(e) {
+                e.preventDefault();
+
+                var postData = {
+                    Name: $('#@Html.IdFor(model => model.Name)').val(),
+                    Description: $('#@Html.IdFor(model => model.Description)').val(),
+                    DisplayOrder: $('#@Html.IdFor(model => model.DisplayOrder)').val(),
+                    PictureId: $('#@Html.IdFor(model => model.PictureId)').val(),
+                    ParentGroupId: $('#@Html.IdFor(model => model.ParentGroupId)').val()
+                };
+                addAntiForgeryToken(postData);
+
+                $.ajax({
+                    cache: false,
+                    type: "POST",
+                    url: "@(Url.Action("Create", "MaterialGroup"))",
+                    data: postData,
+                    error: function(xhr, ajaxOptions, thrownError) {
+                        alert(thrownError);
+                    },
+                    traditional: true
+                });
+                return false;
+            });
+    </script>-->
+
+</form>
+

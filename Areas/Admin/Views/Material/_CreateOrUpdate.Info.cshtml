@@ -1,0 +1,176 @@
+﻿@model MaterialDetailsPageViewModel
+
+@using Nop.Core.Domain.Catalog;
+@using Nop.Services.Catalog;
+@using System.Text;
+@using System.Text.Encodings.Web
+@using Nop.Services
+@using Nop.Services.Stores
+
+@{
+
+    //resources for material tags input
+    //Html.AppendCssFileParts("~/lib/tagEditor/jquery.tag-editor.css");
+    //Html.AppendScriptParts("~/lib/tagEditor/jquery.tag-editor.min.js");
+    //Html.AppendScriptParts("~/lib/tagEditor/jquery.caret.min.js");
+}
+
+<div class="raw clearfix">
+
+    <div class="col-md-7">
+        <div class="panel-group">
+            @await Component.InvokeAsync("AdminWidget", new { widgetZone = "admin_material_details_info_column_left_top", additionalData = Model.Id })
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    @T("Xrms.Admin.Catalog.Materials.Details.Tabs.Info.Sections.CommonInfo")
+                </div>
+                <div class="panel-body">
+                    @if (Model.Id > 0)
+    {
+                <div class="form-group advanced-setting">
+                    <div class="col-md-3">
+                        <nop-label asp-for="Id" />
+                    </div>
+                    <div class="col-md-9">
+                        <div class="form-text-row">@Model.Id</div>
+                    </div>
+                </div>
+}
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            <nop-label asp-for="Code" />
+                        </div>
+                        <div class="col-md-9">
+                            <nop-editor asp-for="Code" />
+                            <span asp-validation-for="Code"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            <nop-label asp-for="Name" />
+                        </div>
+                        <div class="col-md-9">
+                            <nop-editor asp-for="Name" asp-required="true" />
+                            <span asp-validation-for="Name"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            <nop-label asp-for="Description" />
+                        </div>
+                        <div class="col-md-9">
+                            <nop-editor asp-for="Description" asp-template="RichEditor" />
+                            <span asp-validation-for="Description"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            <nop-label asp-for="PictureId" />
+                        </div>
+                        <div class="col-md-9">
+                            <nop-editor asp-for="PictureId" />
+                            <span asp-validation-for="PictureId"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            <nop-label asp-for="MaterialGroupId" />
+                        </div>
+                        <div class="col-md-9">
+                            <nop-select asp-for="MaterialGroupId" asp-items="Model.AvailableMaterialGroups" />
+                            <span asp-validation-for="MaterialGroupId"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            <nop-label asp-for="Cost" />
+                        </div>
+                        <div class="col-md-9">
+                            <nop-editor asp-for="Cost" />
+                            <span asp-validation-for="Cost"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group advanced-setting">
+                        <div class="col-md-3">
+                            <nop-label asp-for="AdminComment" />
+                        </div>
+                        <div class="col-md-9">
+                            <nop-textarea asp-for="AdminComment" />
+                            <span asp-validation-for="AdminComment"></span>
+                        </div>
+                    </div>
+                    @*@if (Model.CreatedOn.HasValue)
+        {
+            <div class="form-group advanced-setting">
+                <div class="col-md-3">
+                    <nop-label asp-for="CreatedOn" />
+                </div>
+                <div class="col-md-9">
+                    <div class="form-text-row">@Model.CreatedOn.Value.ToString("F")</div>
+                </div>
+            </div>
+        }
+        @if (Model.UpdatedOn.HasValue)
+        {
+            <div class="form-group advanced-setting">
+                <div class="col-md-3">
+                    <nop-label asp-for="UpdatedOn" />
+                </div>
+                <div class="col-md-9">
+                    <div class="form-text-row">@Model.UpdatedOn.Value.ToString("F")</div>
+                </div>
+            </div>
+        }*@
+                </div>
+            </div>
+            @await Component.InvokeAsync("AdminWidget", new { widgetZone = "admin_material_details_info_column_left_bottom", additionalData = Model.Id })
+        </div>
+    </div>
+    <div class="col-md-5">
+        <div class="panel-group">
+            @{
+                var leftColumnClass = "col-md-4";
+                var rightColumnClass = "col-md-8";
+            }
+            @await Component.InvokeAsync("AdminWidget", new { widgetZone = "admin_material_details_info_column_right_top", additionalData = Model.Id })
+            <div class="panel panel-default no-margin" id="group-inventory">
+                <div class="panel-heading">
+                    @T("Xrms.Admin.Catalog.Materials.Details.Tabs.Info.Sections.Inventory")
+                </div>
+                <div class="panel-body">
+                    <div class="form-group" id="pnlStockQuantity">
+                        <div class="@leftColumnClass">
+                            <nop-label asp-for="StockQuantity" />
+                        </div>
+                        <div class="@rightColumnClass">
+                            <nop-editor asp-for="StockQuantity" />
+                            <span asp-validation-for="StockQuantity"></span>
+                        </div>
+                    </div>
+                    <div class="form-group advanced-setting" id="pnlWarehouse">
+                        <div class="@leftColumnClass">
+                            <nop-label asp-for="WarehouseId" />
+                        </div>
+                        <div class="@rightColumnClass">
+                            <nop-select asp-for="WarehouseId" asp-items="Model.AvailableWarehouses" />
+                            <span asp-validation-for="WarehouseId"></span>
+                        </div>
+                    </div>
+                    <div class="form-group advanced-setting" id="pnlMinStockQuantity">
+                        <div class="@leftColumnClass">
+                            <nop-label asp-for="MinStockQuantity" />
+                        </div>
+                        <div class="@rightColumnClass">
+                            <nop-editor asp-for="MinStockQuantity" />
+                            <span asp-validation-for="MinStockQuantity"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @await Component.InvokeAsync("AdminWidget", new { widgetZone = "admin_material_details_info_column_right_bottom", additionalData = Model.Id })
+        </div>
+    </div>
+    </div>

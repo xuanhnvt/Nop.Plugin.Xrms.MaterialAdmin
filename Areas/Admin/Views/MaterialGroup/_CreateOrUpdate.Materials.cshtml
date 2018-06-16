@@ -1,0 +1,135 @@
+﻿@model MaterialGroupDetailsPageViewModel
+@inject AdminAreaSettings adminAreaSettings
+@{
+    var defaultGridPageSize = adminAreaSettings.DefaultGridPageSize;
+    var gridPageSizes = adminAreaSettings.GridPageSizes;
+}
+<div class="panel-group">
+    @await Component.InvokeAsync("AdminWidget", new { widgetZone = "admin_material_group_details_materials_top", additionalData = Model.Id })
+    @if (Model.Id > 0)
+    {
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div id="materials-grid"></div>
+
+                <script type="text/javascript">
+                    $(document).ready(function() {
+                        $("#materials-grid").kendoGrid({
+                            dataSource: {
+                                type: "json",
+                                transport: {
+                                    read: {
+                                        url: "@Html.Raw(Url.Action("MaterialList", "MaterialGroup", new {groupId = Model.Id }))",
+                                        type: "POST",
+                                        dataType: "json",
+                                        data: addAntiForgeryToken
+                                    },
+                                    destroy: {
+                                        url: "@Html.Raw(Url.Action("UnGroupMaterial", "MaterialGroup"))",
+                                        type: "POST",
+                                        dataType: "json",
+                                        data: addAntiForgeryToken
+                                    }
+                                },
+                                schema: {
+                                    data: "Data",
+                                    total: "Total",
+                                    errors: "Errors",
+                                    model: {
+                                        id: "Id",
+                                        fields: {
+                                            Name: { editable: false, type: "string" },
+                                            StockQuantity: { editable: false, type: "number" },
+                                            Id: { editable: false, type: "number" }
+                                        }
+                                    }
+                                },
+                                requestEnd: function(e) {
+                                    /*if (e.type == "update") {
+                                        this.read();
+                                    }*/
+                                },
+                                error: function(e) {
+                                    display_kendoui_grid_error(e);
+                                    // Cancel the changes
+                                    this.cancelChanges();
+                                },
+                                pageSize: @(defaultGridPageSize),
+                                serverPaging: true,
+                                serverFiltering: true,
+                                serverSorting: true
+                            },
+                            pageable: {
+                                refresh: true,
+                                pageSizes: [@(gridPageSizes)],
+                                @await Html.PartialAsync("_GridPagerMessages")
+                            },
+                            editable: {
+                                confirmation: "@T("Admin.Common.DeleteConfirmation")",
+                                mode: "inline"
+                            },
+                            scrollable: false,
+                            columns: [
+                                {
+                                    field: "Name",
+                                    title: "@T("Xrms.Admin.Catalog.MaterialGroups.Details.Tabs.Materials.Columns.Material")"
+                                }, {
+                                    field: "StockQuantity",
+                                    title: "@T("Xrms.Admin.Catalog.Materials.Fields.StockQuantity")",
+                                    //integer format
+                                    format: "{0:0}",
+                                    width: 150
+                                }, {
+                                    field: "Id",
+                                    title: "@T("Admin.Common.View")",
+                                    width: 100,
+                                    headerAttributes: { style: "text-align:center" },
+                                    attributes: { style: "text-align:center" },
+                                    template: '<a class="btn btn-default" href="@Url.Content("~/Admin/Material/Edit/")#=Id#"><i class="fa fa-eye"></i>@T("Admin.Common.View")</a>'
+                                }, {
+                                    command: [
+                                        {
+                                            name: "destroy",
+                                            text: "@T("Xrms.Admin.Catalog.MaterialGroups.Details.Tabs.Materials.Buttons.RemoveMaterial")"
+                                        }
+                                    ],
+                                    width: 100
+                                }
+                            ]
+                        });
+                    });
+                </script>
+            </div>
+
+            <div class="panel-footer">
+                <button type="submit" id="btnAddNewMaterial"
+                        onclick="javascript:OpenWindow('@(Url.Action("AddMaterialsPopup", "MaterialGroup", new {materialGroupId = Model.Id, btnId = "btnRefreshMaterials", formId = "material-group-form"}))', 800, 800, true); return false;"
+                        class="btn btn-primary">
+                    @T("Xrms.Admin.Catalog.MaterialGroups.Details.Tabs.Materials.Buttons.AddMaterials")
+                </button>
+                <input type="submit" id="btnRefreshMaterials" style="display: none" />
+                <script type="text/javascript">
+                    $(document).ready(function () {
+                        $('#btnRefreshMaterials').click(function () {
+                            //refresh grid
+                            var grid = $("#materials-grid").data('kendoGrid');
+                            grid.dataSource.read();
+
+                            //return false to don't reload a page
+                            return false;
+                        });
+                    });
+                </script>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="panel panel-default">
+            <div class="panel-body">
+                @T("Xrms.Admin.Catalog.MaterialGroups.Details.Tabs.Materials.Hints.SaveBeforeEdit")
+            </div>
+        </div>
+    }
+    @await Component.InvokeAsync("AdminWidget", new { widgetZone = "admin_material_group_details_materials_bottom", additionalData = Model.Id })
+</div>

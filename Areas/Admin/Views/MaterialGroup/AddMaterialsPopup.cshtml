@@ -1,0 +1,272 @@
+﻿@model MaterialGroupDetailsPageViewModel.AddMaterialsPopupViewModel
+@inject AdminAreaSettings adminAreaSettings
+@{
+    Layout = "_AdminPopupLayout";
+
+    var popGridPageSize = adminAreaSettings.PopupGridPageSize;
+
+    //page title
+    ViewBag.Title = T("Xrms.Admin.Catalog.MaterialGroups.Details.AddMaterialsPopup.Title").Text;
+}
+
+<form asp-controller="MaterialGroup" asp-action="AddMaterialsPopup"
+      asp-route-materialGroupId="@Context.Request.Query["materialGroupId"]"
+      asp-route-btnId="@Context.Request.Query["btnId"]"
+      asp-route-formId="@Context.Request.Query["formId"]">
+    <div class="content-header clearfix">
+        <h1 class="pull-left">
+            @T("Xrms.Admin.Catalog.MaterialGroups.Details.AddMaterialsPopup.Title")
+        </h1>
+        <div class="pull-right">
+            &nbsp;
+        </div>
+    </div>
+    <div class="content">
+        <div class="form-horizontal">
+            <div class="panel-group">
+                <div class="panel panel-default panel-search panel-popup">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <div class="col-sm-5">
+                                        <nop-label asp-for="SearchModel.SearchMaterialName" />
+                                    </div>
+                                    <div class="col-sm-7">
+                                        <nop-editor asp-for="SearchModel.SearchMaterialName" />
+                                    </div>
+                                </div>
+                                <div class="form-group" @(Model.AvailableMaterialGroups.SelectionIsNotPossible() ? Html.Raw("style=\"display:none\"") : null)>
+                                    <div class="col-sm-5">
+                                        <nop-label asp-for="SearchModel.SearchMaterialGroupId" />
+                                    </div>
+                                    <div class="col-sm-7">
+                                        <nop-select asp-for="SearchModel.SearchMaterialGroupId" asp-items="Model.AvailableMaterialGroups" />
+                                    </div>
+                                </div>
+
+                                <div class="form-group" @(Model.AvailableMaterialGroups.SelectionIsNotPossible() ? Html.Raw("style=\"display:none\"") : null)>
+                                    <div class="col-sm-5">
+                                        <nop-label asp-for="SearchModel.SearchIncludeSubGroup" />
+                                    </div>
+                                    <div class="col-sm-7">
+                                        <nop-editor asp-for="SearchModel.SearchIncludeSubGroup" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group" @(Model.AvailableWarehouses.SelectionIsNotPossible() ? Html.Raw("style=\"display:none\"") : null)>
+                                    <div class="col-sm-5">
+                                        <nop-label asp-for="SearchModel.SearchWarehouseId" />
+                                    </div>
+                                    <div class="col-sm-7">
+                                        <nop-select asp-for="SearchModel.SearchWarehouseId" asp-items="Model.AvailableWarehouses" />
+                                    </div>
+                                </div>
+                                <div class="form-group" @(Model.AvailableSuppliers.SelectionIsNotPossible() ? Html.Raw("style=\"display:none\"") : null)>
+                                    <div class="col-sm-5">
+                                        <nop-label asp-for="SearchModel.SearchManufacturerId" />
+                                    </div>
+                                    <div class="col-sm-7">
+                                        <nop-select asp-for="SearchModel.SearchManufacturerId" asp-items="Model.AvailableSuppliers" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <button type="button" id="search-materials" class="btn btn-primary btn-search">
+                                    <i class="fa fa-search"></i>
+                                    @T("Admin.Common.Search")
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div id="materials-grid"></div>
+
+                        <script type="text/javascript">
+                        $(document).ready(function() {
+                            $("#materials-grid").kendoGrid({
+                                dataSource: {
+                                    type: "json",
+                                    transport: {
+                                        read: {
+                                            url: "@Html.Raw(Url.Action("AddMaterialsPopupList", "MaterialGroup"))",
+                                            type: "POST",
+                                            dataType: "json",
+                                            data: additionalData
+                                        }
+                                    },
+                                    schema: {
+                                        data: "Data",
+                                        total: "Total",
+                                        errors: "Errors"
+                                    },
+                                    error: function(e) {
+                                        display_kendoui_grid_error(e);
+                                        // Cancel the changes
+                                        this.cancelChanges();
+                                    },
+                                    pageSize: @(popGridPageSize),
+                                    serverPaging: true,
+                                    serverFiltering: true,
+                                    serverSorting: true
+                                },
+                                pageable: {
+                                    refresh: true,
+                                    @await Html.PartialAsync("_GridPagerMessages")
+                                },
+                                editable: {
+                                    confirmation: "@T("Admin.Common.DeleteConfirmation")",
+                                    mode: "inline"
+                                },
+                                scrollable: false,
+                                columns: [
+                                    {
+                                        field: "Id",
+                                        headerTemplate: "<input id='mastercheckbox' type='checkbox'/>",
+                                        headerAttributes: { style: "text-align:center" },
+                                        template: "<input type='checkbox' name='SelectedMaterialIds' value='#=Id#' class='checkboxGroups' />",
+                                        attributes: { style: "text-align:center" },
+                                        width: 50
+                                    }, {
+                                        field: "Name",
+                                        title: "@T("Xrms.Admin.Catalog.Materials.Fields.Name")"
+                                    }, {
+                                        field: "Group",
+                                        title: "@T("Xrms.Admin.Catalog.Materials.Fields.MaterialGroup")"
+                                    }, {
+                                        field: "Unit",
+                                        title: "@T("Xrms.Admin.Catalog.Materials.Fields.Unit")"
+                                    }
+                                ]
+                            });
+                        });
+                        </script>
+
+                        <script type="text/javascript">
+
+                            var selectedIds = [];
+                        $(document).ready(function() {
+                            $('#search-materials').click(function() {
+                                var grid = $('#materials-grid').data('kendoGrid');
+                                grid.dataSource.page(1); //new search. Set page size to 1
+                                //grid.dataSource.read(); we already loaded the grid above using "page" function
+                                //clear selected checkboxes
+                                $('.checkboxGroups').attr('checked', false).change();
+
+                                selectedIds = [];
+                                return false;
+                            });
+
+                            $("#@Html.IdFor(model => model.SearchModel.SearchMaterialName)").keydown(function(event) {
+                                if (event.keyCode == 13) {
+                                    $("#search-materials").click();
+                                    return false;
+                                }
+                            });
+
+                            //wire up checkboxes
+                            $('#mastercheckbox').click(function() {
+                                $('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
+                            });
+
+                            $('#materials-grid').on('change', 'input[type=checkbox][id!=mastercheckbox][class=checkboxGroups]', function(e) {
+                                var $check = $(this);
+                                if ($check.is(":checked") == true) {
+                                    var checked = jQuery.inArray($check.val(), selectedIds);
+                                    if (checked == -1) {
+                                        //add id to selectedIds.
+                                        selectedIds.push($check.val());
+                                    }
+                                }
+                                else {
+                                    var checked = jQuery.inArray($check.val(), selectedIds);
+                                    if (checked > -1) {
+                                        //remove id from selectedIds.
+                                        selectedIds = $.grep(selectedIds, function (item, index) {
+                                            return item != $check.val();
+                                        });
+                                    }
+                                }
+                                updateMasterCheckbox();
+                            });
+
+                            
+
+                            //save selected
+                            $('#save').click(function(e) {
+                e.preventDefault();
+
+                                var postData = {
+                                    MaterialGroupId: @Context.Request.Query["materialGroupId"],
+                                    SelectedMaterialIds: selectedIds
+                };
+                addAntiForgeryToken(postData);
+
+                $.ajax({
+                    cache: false,
+                    type: "POST",
+                    url: "@Html.Raw(Url.Action("AddMaterialsPopup", "MaterialGroup"))",
+                    data: postData,
+                    complete: function(data) {
+                        //reload grid
+                        //var grid = $('#materials-grid').data('kendoGrid');
+                        //grid.dataSource.read();
+                        try {window.opener.document.forms['@(Context.Request.Query["formId"])'].@(Context.Request.Query["btnId"]).click();}
+                        catch (e){}
+                        window.close();
+                    },
+                    error: function(xhr, ajaxOptions, thrownError) {
+                        alert(thrownError);
+                    },
+                    traditional: true
+                });
+                return false;
+            });
+                        });
+
+
+                        function additionalData() {
+                            var data = {
+                                SearchMaterialName: $('#@Html.IdFor(model => model.SearchModel.SearchMaterialName)').val(),
+                                SearchMaterialGroupId: $('#@Html.IdFor(model => model.SearchModel.SearchMaterialGroupId)').val(),
+                                SearchIncludeSubGroup: $('#@Html.IdFor(model => model.SearchModel.SearchIncludeSubGroup)').is(':checked'),
+                                SearchManufacturerId: $('#@Html.IdFor(model => model.SearchModel.SearchManufacturerId)').val(),
+                                SearchWarehouseId: $('#@Html.IdFor(model => model.SearchModel.SearchWarehouseId)').val()
+                            };
+                            addAntiForgeryToken(data);
+                            return data;
+                        }
+
+                        function updateMasterCheckbox() {
+                            var numChkBoxes = $('#materials-grid input[type=checkbox][id!=mastercheckbox][class=checkboxGroups]').length;
+                            var numChkBoxesChecked = $('#materials-grid input[type=checkbox][id!=mastercheckbox][class=checkboxGroups]:checked').length;
+                            $('#mastercheckbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
+                            }
+
+                            function savedData() {
+                                var data = {
+                                    SelectedMaterialIds: $('.checkboxGroups:checked').serialize()
+                                };
+                                addAntiForgeryToken(data);
+                                return data;
+                            }
+
+                        </script>
+                    </div>
+                    <div class="panel-footer">
+                        <button type="button" id="save" name="save" class="btn bg-blue">
+                            <i class="fa fa-floppy-o"></i>
+                            @T("Admin.Common.Save")
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

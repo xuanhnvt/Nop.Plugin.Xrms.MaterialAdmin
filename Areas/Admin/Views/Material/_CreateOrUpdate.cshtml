@@ -1,0 +1,35 @@
+﻿@model MaterialDetailsPageViewModel
+@inject IEventPublisher eventPublisher
+
+<div asp-validation-summary="All"></div>
+<input asp-for="Id" type="hidden" />
+
+<div class="content">
+    <div class="form-horizontal">
+        <div class="row">
+            <div class="col-md-12 clearfix">
+                <div class="pull-left">
+                    @await Component.InvokeAsync("SettingMode", new { modeName = "material-advanced-mode" })
+                </div>
+            </div>
+        </div>
+
+        <nop-tabs id="material-edit">
+            <nop-tab asp-name="tab-info" asp-title="@T("Xrms.Admin.Catalog.Materials.Details.Tabs.Info")" asp-default="true">@await Html.PartialAsync("~/Plugins/Xrms.MaterialAdmin/Areas/Admin/Views/Material/_CreateOrUpdate.Info.cshtml", Model)</nop-tab>
+            @*@if (Model.Id > 0)
+        {
+            <nop-tab asp-name="tab-stock-quantity-history" asp-title="@T("Admin.Catalog.Products.StockQuantityHistory")" class="@(Model.ProductEditorSettingsModel.StockQuantityHistory ? "" : "advanced-setting")">@await Html.PartialAsync("_CreateOrUpdate._StockQuantityHistory", Model)</nop-tab>
+        }*@
+        </nop-tabs>
+    </div>
+</div>
+
+@*@{
+        //custom tabs
+        var eventMessage = new AdminTabStripCreated(this.Html, "material-edit");
+        eventPublisher.Publish(eventMessage);
+        foreach (var eventBlock in eventMessage.BlocksToRender)
+        {
+            @eventBlock
+        }
+    }*@

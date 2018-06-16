@@ -1,0 +1,38 @@
+﻿@model MaterialGroupDetailsPageViewModel
+@{
+    Layout = "_AdminLayout";
+
+    //page title
+    ViewBag.Title = T("Xrms.Admin.Catalog.MaterialGroups.Details.Edit.Title").Text;
+    //active menu item (system name)
+    Html.SetActiveMenuItemSystemName("MaterialGroups");
+}
+
+<form asp-controller="MaterialGroup" asp-action="Edit" method="post" id="material-group-form">
+    <div class="content-header clearfix">
+        <h1 class="pull-left">
+            @T("Xrms.Admin.Catalog.MaterialGroups.Details.Edit.Title") - @Model.Name
+            <small>
+                <i class="fa fa-arrow-circle-left"></i>
+                <a asp-action="List">@T("Xrms.Admin.Catalog.MaterialGroups.Details.Buttons.BackToList")</a>
+            </small>
+        </h1>
+        <div class="pull-right">
+            <button type="submit" name="save" class="btn bg-blue">
+                <i class="fa fa-floppy-o"></i>
+                @T("Admin.Common.Save")
+            </button>
+            <button type="submit" name="save-continue" class="btn bg-blue">
+                <i class="fa fa-floppy-o"></i>
+                @T("Admin.Common.SaveContinue")
+            </button>
+            <span id="material-group-delete" class="btn bg-red">
+                <i class="fa fa-trash-o"></i>
+                @T("Admin.Common.Delete")
+            </span>
+            @await Component.InvokeAsync("AdminWidget", new { widgetZone = "admin_material_group_details_buttons", additionalData = Model.Id })
+        </div>
+    </div>
+    @await Html.PartialAsync("~/Plugins/Xrms.MaterialAdmin/Areas/Admin/Views/MaterialGroup/_CreateOrUpdate.cshtml", Model)
+</form>
+<nop-delete-confirmation asp-model-id="@Model.Id" asp-button-id="material-group-delete" />

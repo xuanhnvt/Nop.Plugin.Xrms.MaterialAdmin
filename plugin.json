@@ -1,0 +1,11 @@
+﻿{
+  "Group": "Xrms",
+  "FriendlyName": "XRMS Material Admin Menu",
+  "SystemName": "Xrms.MaterialAdmin",
+  "Version": "1.00",
+  "SupportedVersions": [ "4.00" ],
+  "Author": "Hung Xuan",
+  "DisplayOrder": 1,
+  "FileName": "Nop.Plugin.Xrms.MaterialAdmin.dll",
+  "Description": "This plugin add new menu item ‘Material’ into Admin Menu so that administrator can manage material."
+}

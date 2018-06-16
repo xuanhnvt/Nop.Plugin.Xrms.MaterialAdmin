@@ -1,0 +1,35 @@
+﻿@model MaterialDetailsPageViewModel
+
+@{
+
+    Layout = "_AdminLayout";
+
+    //page title
+    ViewBag.Title = T("Xrms.Admin.Catalog.Materials.Details.Create.Title").Text;
+    //active menu item (system name)
+    Html.SetActiveMenuItemSystemName("Materials");
+}
+
+<form asp-controller="Material" asp-action="Create" method="post" id="material-form">
+    <div class="content-header clearfix">
+        <h1 class="pull-left">
+            @T("Xrms.Admin.Catalog.Materials.Details.Create.Title")
+            <small>
+                <i class="fa fa-arrow-circle-left"></i>
+                <a asp-action="List">@T("Xrms.Admin.Catalog.Materials.Details.Buttons.BackToList")</a>
+            </small>
+        </h1>
+        <div class="pull-right">
+            <button type="submit" name="save" class="btn bg-blue">
+                <i class="fa fa-floppy-o"></i>
+                @T("Admin.Common.Save")
+            </button>
+            <button type="submit" name="save-continue" class="btn bg-blue">
+                <i class="fa fa-floppy-o"></i>
+                @T("Admin.Common.SaveContinue")
+            </button>
+            @await Component.InvokeAsync("AdminWidget", new { widgetZone = "admin_material_details_buttons" })
+        </div>
+    </div>
+    @await Html.PartialAsync("~/Plugins/Xrms.MaterialAdmin/Areas/Admin/Views/Material/_CreateOrUpdate.cshtml", Model)
+</form>
