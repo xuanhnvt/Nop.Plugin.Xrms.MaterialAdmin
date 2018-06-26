@@ -56,6 +56,38 @@ namespace Nop.Plugin.Xrms.MaterialAdmin
             this.AddOrUpdatePluginLocaleResource("Plugins.Api.Admin.AllowRequestsFromSwagger.Hint", "Swagger is the documentation generation tool used for the API (/Swagger). It has a client that enables it to make GET requests to the API endpoints. By enabling this option you will allow all requests from the swagger client. Do Not Enable on live site, it is only for demo sites or local testing!!!");
             */
 
+            #region Suppliers
+
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.Notifications.Created", "The new supplier has been created successfully.");
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.Notifications.Updated", "The supplier has been updated successfully.");
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.Notifications.Deleted", "The supplier has been deleted successfully.");
+
+            this.AddOrUpdatePluginLocaleResource("Xrms.ActivityLog.AddNewSupplier", "Added a new supplier ('{0}')");
+            this.AddOrUpdatePluginLocaleResource("Xrms.ActivityLog.EditSupplier", "Edited a supplier ('{0}')");
+            this.AddOrUpdatePluginLocaleResource("Xrms.ActivityLog.DeleteSupplier", "Deleted a supplier ('{0}')");
+
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.List.Title", "Suppliers");
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.List.Search.SupplierName", "Supplier name");
+
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.Details.Create.Title", "Create a new supplier");
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.Details.Edit.Title", "Edit supplier details");
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.Details.Buttons.BackToList", "back to supplier list");
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.Details.Tabs.Info", "Supplier info");
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.Details.Tabs.Materials", "Materials");
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.Details.Tabs.Materials.Columns.Material", "Material");
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.Details.Tabs.Materials.Buttons.RemoveMaterial", "Remove");
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.Details.Tabs.Materials.Buttons.AddMaterials", "Add Materials");
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.Details.Tabs.Materials.Hints.SaveBeforeEdit", "You need to save the supplier before you can add materials for this supplier page.");
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.Details.AddMaterialsPopup.Title", "Add materials into supplier");
+
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.Fields.Name", "Name");
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.Fields.Name.Required", "Please provide a name.");
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.Fields.Description", "Description");
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.Fields.Picture", "Picture");
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.Fields.DisplayOrder", "Display Order");
+
+            #endregion // Suppliers
+
             #region Material Groups
 
             this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.MaterialGroups.Notifications.Created", "The new material group has been created successfully.");
@@ -82,6 +114,7 @@ namespace Nop.Plugin.Xrms.MaterialAdmin
             this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.MaterialGroups.Details.AddMaterialsPopup.Title", "Add materials into group");
 
             this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.MaterialGroups.Fields.Name", "Name");
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.MaterialGroups.Fields.Name.Required", "Please provide a name.");
             this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.MaterialGroups.Fields.Description", "Description");
             this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.MaterialGroups.Fields.Parent", "Parent group");
             this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.MaterialGroups.Fields.Parent.None", "None");
@@ -117,15 +150,17 @@ namespace Nop.Plugin.Xrms.MaterialAdmin
             this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.Details.Tabs.Info", "Material info");
             this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.Details.Tabs.Info.Sections.CommonInfo", "General information");
             this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.Details.Tabs.Info.Sections.Inventory", "Inventory");
-
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.Details.Tabs.StockQuantityHistory", "Stock quantity history");
 
             this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.Name", "Name");
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.Name.Required", "Please provide a name.");
             this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.Description", "Description");
             this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.MaterialGroup", "Material Group");
             this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.Picture", "Picture");
             this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.DisplayOrder", "Display Order");
             this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.Code", "Code");
             this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.Supplier", "Manufacturer");
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.ManageInventoryMethod", "Inventory method");
             this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.Warehouse", "Warehouse");
             this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.StockQuantity", "Stock Quantity");
             this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.UsedQuantity", "Used Quantity");
@@ -171,9 +206,6 @@ namespace Nop.Plugin.Xrms.MaterialAdmin
             this.AddOrUpdatePluginLocaleResource("Api.InvalidRootProperty", "Invalid root property");
             this.AddOrUpdatePluginLocaleResource("Api.NoJsonProvided", "No Json provided");
             this.AddOrUpdatePluginLocaleResource("Api.InvalidJsonFormat", "Json format is invalid");
-            this.AddOrUpdatePluginLocaleResource("Api.Category.InvalidImageAttachmentFormat", "Invalid image attachment base64 format");
-            this.AddOrUpdatePluginLocaleResource("Api.Category.InvalidImageSrc", "Invalid image source");
-            this.AddOrUpdatePluginLocaleResource("Api.Category.InvalidImageSrcType", "You have provided an invalid image source/attachment ");
 
             this.AddOrUpdatePluginLocaleResource("Api.WebHooks.CouldNotRegisterWebhook", "Could not register WebHook due to error: {0}");
             this.AddOrUpdatePluginLocaleResource("Api.WebHooks.CouldNotRegisterDuplicateWebhook", "Could not register WebHook because a webhook with the same URI and Filters is already registered.");
@@ -205,6 +237,39 @@ namespace Nop.Plugin.Xrms.MaterialAdmin
 
             // TODO: Delete all resources
             //locales
+
+            #region Suppliers
+
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.Notifications.Created");
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.Notifications.Updated");
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.Notifications.Deleted");
+
+            this.DeletePluginLocaleResource("Xrms.ActivityLog.AddNewSupplier");
+            this.DeletePluginLocaleResource("Xrms.ActivityLog.EditSupplier");
+            this.DeletePluginLocaleResource("Xrms.ActivityLog.DeleteSupplier");
+
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.List.Title");
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.List.Search.SupplierName");
+
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.Details.Create.Title");
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.Details.Edit.Title");
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.Details.Buttons.BackToList");
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.Details.Tabs.Info");
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.Details.Tabs.Materials");
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.Details.Tabs.Materials.Columns.Material");
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.Details.Tabs.Materials.Buttons.RemoveMaterial");
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.Details.Tabs.Materials.Buttons.AddMaterials");
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.Details.Tabs.Materials.Hints.SaveBeforeEdit");
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.Details.AddMaterialsPopup.Title");
+
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.Fields.Name");
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.Fields.Name.Required");
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.Fields.Description");
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.Fields.Picture");
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Suppliers.Fields.DisplayOrder");
+
+            #endregion // Suppliers
+
             #region Material Groups
 
             this.DeletePluginLocaleResource("Xrms.Admin.Catalog.MaterialGroups.Notifications.Created");
@@ -231,6 +296,7 @@ namespace Nop.Plugin.Xrms.MaterialAdmin
             this.DeletePluginLocaleResource("Xrms.Admin.Catalog.MaterialGroups.Details.AddMaterialsPopup.Title");
 
             this.DeletePluginLocaleResource("Xrms.Admin.Catalog.MaterialGroups.Fields.Name");
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.MaterialGroups.Fields.Name.Required");
             this.DeletePluginLocaleResource("Xrms.Admin.Catalog.MaterialGroups.Fields.Description");
             this.DeletePluginLocaleResource("Xrms.Admin.Catalog.MaterialGroups.Fields.Parent");
             this.DeletePluginLocaleResource("Xrms.Admin.Catalog.MaterialGroups.Fields.Parent.None");
@@ -266,14 +332,17 @@ namespace Nop.Plugin.Xrms.MaterialAdmin
             this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.Details.Tabs.Info");
             this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.Details.Tabs.Info.Sections.CommonInfo");
             this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.Details.Tabs.Info.Sections.Inventory");
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.Details.Tabs.StockQuantityHistory");
 
             this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.Name");
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.Name.Required");
             this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.Description");
             this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.MaterialGroup");
             this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.Picture");
             this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.DisplayOrder");
             this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.Code");
             this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.Supplier");
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.ManageInventoryMethod");
             this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.Warehouse");
             this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.StockQuantity");
             this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.UsedQuantity");
@@ -362,6 +431,19 @@ namespace Nop.Plugin.Xrms.MaterialAdmin
                 Title = "Material Groups",
                 //Url = pluginDocumentationUrl,
                 ControllerName = "MaterialGroup",
+                ActionName = "List",
+                IconClass = "fa-dot-circle-o",
+                Visible = true,
+                RouteValues = new RouteValueDictionary() { { "area", AreaNames.Admin } },
+            });
+
+
+            pluginNode.ChildNodes.Add(new SiteMapNode()
+            {
+                SystemName = "Suppliers",
+                Title = "Suppliers",
+                //Url = pluginDocumentationUrl,
+                ControllerName = "Supplier",
                 ActionName = "List",
                 IconClass = "fa-dot-circle-o",
                 Visible = true,

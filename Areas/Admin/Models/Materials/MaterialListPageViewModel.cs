@@ -11,13 +11,13 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Areas.Admin.Models.Materials
 
         public MaterialListPageViewModel()
         {
-            AvailableCategories = new List<SelectListItem>();
-            AvailableManufacturers = new List<SelectListItem>();
+            AvailableMaterialGroups = new List<SelectListItem>();
+            AvailableSuppliers = new List<SelectListItem>();
             AvailableWarehouses = new List<SelectListItem>();
         }
 
-        public IList<SelectListItem> AvailableCategories { get; set; }
-        public IList<SelectListItem> AvailableManufacturers { get; set; }
+        public IList<SelectListItem> AvailableMaterialGroups { get; set; }
+        public IList<SelectListItem> AvailableSuppliers { get; set; }
         public IList<SelectListItem> AvailableWarehouses { get; set; }
 
         public MaterialListSearchModel SearchModel { get; set; }

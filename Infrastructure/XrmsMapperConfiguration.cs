@@ -8,6 +8,7 @@ using Nop.Core.Infrastructure.Mapper;
 using Nop.Plugin.Xrms.MaterialAdmin.Domain;
 using Nop.Plugin.Xrms.MaterialAdmin.Areas.Admin.Models.MaterialGroups;
 using Nop.Plugin.Xrms.MaterialAdmin.Areas.Admin.Models.Materials;
+using Nop.Plugin.Xrms.MaterialAdmin.Areas.Admin.Models.Suppliers;
 
 namespace Nop.Plugin.Xrms.MaterialAdmin.Infrastructure
 {
@@ -44,6 +45,20 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Infrastructure
             CreateMap<MaterialModel, MaterialDetailsPageViewModel>();
 
             #endregion // Material
+
+            #region Supplier
+
+            // from entity to view model
+            CreateMap<Supplier, SupplierListItemViewModel>();
+            //CreateMap<Supplier, SupplierDetailsPageViewModel>();
+
+            // from action model to entity
+            CreateMap<SupplierModel, Supplier>();
+
+            // from action model to view model
+            //CreateMap<SupplierModel, SupplierDetailsPageViewModel>();
+
+            #endregion // Supplier
 
         }
 

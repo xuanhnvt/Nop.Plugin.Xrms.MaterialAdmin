@@ -93,7 +93,7 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Controllers
         
         #region Utilities
 
-        protected virtual void PrepareAllGroupsModel(MaterialGroupDetailsPageViewModel model)
+        protected virtual void PrepareAvailableMaterialGroups(MaterialGroupDetailsPageViewModel model)
         {
             if (model == null)
                 throw new ArgumentNullException(nameof(model));
@@ -180,7 +180,7 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Controllers
             model.DisplayOrder = 1;
 
             // prepare parent groups
-            PrepareAllGroupsModel(model);
+            PrepareAvailableMaterialGroups(model);
 
             return View("~/Plugins/Xrms.MaterialAdmin/Areas/Admin/Views/MaterialGroup/Create.cshtml", model);
         }
@@ -219,7 +219,7 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Controllers
             //viewModel.MaterialGroupInfo = model;
 
             // prepare parent groups
-            PrepareAllGroupsModel(viewModel);
+            PrepareAvailableMaterialGroups(viewModel);
 
             return View("~/Plugins/Xrms.MaterialAdmin/Areas/Admin/Views/MaterialGroup/Create.cshtml", viewModel);
         }
@@ -237,7 +237,7 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Controllers
             var viewModel = materialGroup.ToDetailsViewModel();
 
             // prepare parent groups
-            PrepareAllGroupsModel(viewModel);
+            PrepareAvailableMaterialGroups(viewModel);
 
             return View("~/Plugins/Xrms.MaterialAdmin/Areas/Admin/Views/MaterialGroup/Edit.cshtml", viewModel);
         }
@@ -289,7 +289,7 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Controllers
 
             //If we got this far, something failed, redisplay form
             // prepare parent groups
-            PrepareAllGroupsModel(viewModel);
+            PrepareAvailableMaterialGroups(viewModel);
 
             return View("~/Plugins/Xrms.MaterialAdmin/Areas/Admin/Views/MaterialGroup/Edit.cshtml", viewModel);
         }
@@ -402,7 +402,8 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Controllers
                 {
                     Id = x.Id,
                     Name = x.Name,
-                    StockQuantity = x.StockQuantity
+                    StockQuantity = x.StockQuantity,
+                    PictureThumbnailUrl = _pictureService.GetPictureUrl(x.PictureId, 75, true)
                 }),
                 Total = materials.TotalCount
             };
@@ -470,8 +471,7 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Controllers
                     groupIds.AddRange(GetChildGroupIds(model.SearchMaterialGroupId));
 
                 var materials = _materialService.SearchMaterials(
-                    categoryIds: groupIds,
-                    manufacturerId: model.SearchManufacturerId,
+                    groupIds: groupIds,
                     warehouseId: model.SearchWarehouseId,
                     keywords: model.SearchMaterialName,
                     pageIndex: command.Page - 1,
@@ -485,14 +485,11 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Controllers
                         var materialModel = new
                         {
                             Id = x.Id,
+                            PictureThumbnailUrl = _pictureService.GetPictureUrl(x.PictureId, 75, true),
                             Name = x.Name,
                             Unit = x.Unit,
-                            Group = _materialGroupService.GetMaterialGroupById(x.MaterialGroupId).Name
+                            Group = x.MaterialGroup.GetFormattedBreadCrumb(_materialGroupService)
                         };
-
-                        //picture
-                        //var defaultProductPicture = _pictureService.GetPicturesByProductId(x.Id, 1).FirstOrDefault();
-                        //productModel.PictureThumbnailUrl = _pictureService.GetPictureUrl(defaultProductPicture, 75, true);
 
                         return materialModel;
                     }),

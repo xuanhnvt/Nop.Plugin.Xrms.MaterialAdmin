@@ -34,11 +34,11 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Services
         /// <remarks>
         /// {0} : material ID
         /// </remarks>
-        private const string PRODUCTS_BY_ID_KEY = "Nop.material.id-{0}";
+        private const string MATERIALS_BY_ID_KEY = "Nop.material.id-{0}";
         /// <summary>
         /// Key pattern to clear cache
         /// </summary>
-        private const string PRODUCTS_PATTERN_KEY = "Nop.material.";
+        private const string MATERIALS_PATTERN_KEY = "Nop.material.";
 
         #endregion
 
@@ -133,12 +133,10 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Services
         /// </summary>
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
-        /// <param name="categoryIds">Category identifiers</param>
-        /// <param name="manufacturerId">Manufacturer identifier; 0 to load all records</param>
+        /// <param name="groupIds">Group identifiers</param>
         /// <param name="warehouseId">Warehouse identifier; 0 to load all records</param>
         /// <param name="keywords">Keywords</param>
         /// <param name="searchDescriptions">A value indicating whether to search by a specified "keyword" in material descriptions</param>
-        /// <param name="searchManufacturerPartNumber">A value indicating whether to search by a specified "keyword" in manufacturer part number</param>
         /// <param name="searchSku">A value indicating whether to search by a specified "keyword" in material SKU</param>
         /// <param name="searchLocalizedValue">A value indicating whether to search in localizable values</param>
         /// <param name="allowedCustomerRolesIds">A list of allowed customer role identifiers (ACL)</param>
@@ -146,9 +144,9 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Services
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>Materials</returns>
         protected virtual IPagedList<Material> SearchMaterialsUseLinq(
-            int pageIndex, int pageSize, IList<int> categoryIds,
-            int manufacturerId, int warehouseId,
-            string keywords, bool searchDescriptions, bool searchManufacturerPartNumber, bool searchSku,
+            int pageIndex, int pageSize, IList<int> groupIds,
+            int warehouseId,
+            string keywords, bool searchDescriptions, bool searchSku,
             bool searchLocalizedValue, int[] allowedCustomerRolesIds, int languageId,
             bool showHidden)
         {
@@ -164,8 +162,6 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Services
                         //from lp in p_lp.DefaultIfEmpty()
                         where (p.Name.Contains(keywords)) ||
                               (searchDescriptions && p.Description.Contains(keywords)) ||
-                              //manufacturer part number
-                              (searchManufacturerPartNumber && p.ManufacturerPartNumber == keywords) ||
                               //SKU (exact match)
                               (searchSku && p.Code == keywords)
                         select p;
@@ -183,21 +179,13 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Services
             }
 
             */
-            //category filtering
-            if (categoryIds != null && categoryIds.Any())
+            //group filtering
+            if (groupIds != null && groupIds.Any())
             {
                 query = from p in query
-                        where (categoryIds.Contains(p.MaterialGroupId))
+                        where (groupIds.Contains(p.MaterialGroupId))
                         select p;
             }
-
-            //manufacturer filtering
-            /*if (manufacturerId > 0)
-            {
-                query = from p in query
-                        from pm in p.MaterialManufacturers.Where(pm => pm.ManufacturerId == manufacturerId)
-                        select p;
-            }*/
 
             //warehouse filtering
             /*if (warehouseId > 0)
@@ -229,89 +217,6 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Services
 
             //return materials
             return materials;
-        }
-
-        /// <summary>
-        /// Search materials using a stored procedure
-        /// </summary>
-        /// <param name="pageIndex">Page index</param>
-        /// <param name="pageSize">Page size</param>
-        /// <param name="categoryIds">Category identifiers</param>
-        /// <param name="manufacturerId">Manufacturer identifier; 0 to load all records</param>
-        /// <param name="storeId">Store identifier; 0 to load all records</param>
-        /// <param name="vendorId">Vendor identifier; 0 to load all records</param>
-        /// <param name="warehouseId">Warehouse identifier; 0 to load all records</param>
-        /// <param name="keywords">Keywords</param>
-        /// <param name="searchDescriptions">A value indicating whether to search by a specified "keyword" in material descriptions</param>
-        /// <param name="searchManufacturerPartNumber">A value indicating whether to search by a specified "keyword" in manufacturer part number</param>
-        /// <param name="searchSku">A value indicating whether to search by a specified "keyword" in material SKU</param>
-        /// <param name="searchLocalizedValue">A value indicating whether to search in localizable values</param>
-        /// <param name="allowedCustomerRolesIds">A list of allowed customer role identifiers (ACL)</param>
-        /// <param name="languageId">Language identifier (search for text searching)</param>
-        /// <param name="showHidden">A value indicating whether to show hidden records</param>
-        /// <returns>Materials</returns>
-        protected virtual IPagedList<Material> SearchMaterialsUseStoredProcedure(
-            int pageIndex, int pageSize, IList<int> categoryIds,
-            int manufacturerId, int storeId, int vendorId, int warehouseId,
-            string keywords, bool searchDescriptions, bool searchManufacturerPartNumber, bool searchSku,
-            int[] allowedCustomerRolesIds, bool searchLocalizedValue, int languageId,
-            bool showHidden)
-        {
-            //pass category identifiers as comma-delimited string
-            var commaSeparatedCategoryIds = categoryIds == null ? "" : string.Join(",", categoryIds);
-
-            //pass customer role identifiers as comma-delimited string
-            var commaSeparatedAllowedCustomerRoleIds = string.Join(",", allowedCustomerRolesIds);
-
-            //some databases don't support int.MaxValue
-            if (pageSize == int.MaxValue)
-                pageSize = int.MaxValue - 1;
-
-            //prepare input parameters
-            var pCategoryIds = _dataProvider.GetStringParameter("CategoryIds", commaSeparatedCategoryIds);
-            var pManufacturerId = _dataProvider.GetInt32Parameter("ManufacturerId", manufacturerId);
-            var pStoreId = _dataProvider.GetInt32Parameter("StoreId", !_catalogSettings.IgnoreStoreLimitations ? storeId : 0);
-            var pVendorId = _dataProvider.GetInt32Parameter("VendorId", vendorId);
-            var pWarehouseId = _dataProvider.GetInt32Parameter("WarehouseId", warehouseId);
-            var pKeywords = _dataProvider.GetStringParameter("Keywords", keywords);
-            var pSearchDescriptions = _dataProvider.GetBooleanParameter("SearchDescriptions", searchDescriptions);
-            var pSearchManufacturerPartNumber = _dataProvider.GetBooleanParameter("SearchManufacturerPartNumber", searchManufacturerPartNumber);
-            var pSearchSku = _dataProvider.GetBooleanParameter("SearchSku", searchSku);
-            var pUseFullTextSearch = _dataProvider.GetBooleanParameter("UseFullTextSearch", _commonSettings.UseFullTextSearch);
-            var pFullTextMode = _dataProvider.GetInt32Parameter("FullTextMode", (int)_commonSettings.FullTextMode);
-            var pLanguageId = _dataProvider.GetInt32Parameter("LanguageId", searchLocalizedValue ? languageId : 0);
-            var pAllowedCustomerRoleIds = _dataProvider.GetStringParameter("AllowedCustomerRoleIds", !_catalogSettings.IgnoreAcl ? commaSeparatedAllowedCustomerRoleIds : "");
-            var pPageIndex = _dataProvider.GetInt32Parameter("PageIndex", pageIndex);
-            var pPageSize = _dataProvider.GetInt32Parameter("PageSize", pageSize);
-            var pShowHidden = _dataProvider.GetBooleanParameter("ShowHidden", showHidden);
-
-            //prepare output parameters
-            var pTotalRecords = _dataProvider.GetOutputInt32Parameter("TotalRecords");
-
-            //invoke stored procedure
-            var materials = _dbContext.ExecuteStoredProcedureList<Material>(
-                "MaterialLoadAllPaged",
-                pCategoryIds,
-                pManufacturerId,
-                pStoreId,
-                pVendorId,
-                pWarehouseId,
-                pKeywords,
-                pSearchDescriptions,
-                pSearchManufacturerPartNumber,
-                pSearchSku,
-                pUseFullTextSearch,
-                pFullTextMode,
-                pLanguageId,
-                pAllowedCustomerRoleIds,
-                pPageIndex,
-                pPageSize,
-                pShowHidden,
-                pTotalRecords);
-            
-            //return materials
-            var totalRecords = pTotalRecords.Value != DBNull.Value ? Convert.ToInt32(pTotalRecords.Value) : 0;
-            return new PagedList<Material>(materials, pageIndex, pageSize, totalRecords);
         }
 
         #endregion
@@ -371,7 +276,7 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Services
             if (materialId == 0)
                 return null;
 
-            var key = string.Format(PRODUCTS_BY_ID_KEY, materialId);
+            var key = string.Format(MATERIALS_BY_ID_KEY, materialId);
             return _cacheManager.Get(key, () => _materialRepository.GetById(materialId));
         }
 
@@ -413,7 +318,7 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Services
             _materialRepository.Insert(material);
 
             //clear cache
-            _cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
+            _cacheManager.RemoveByPattern(MATERIALS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityInserted(material);
@@ -432,7 +337,7 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Services
             _materialRepository.Update(material);
 
             //cache
-            _cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
+            _cacheManager.RemoveByPattern(MATERIALS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(material);
@@ -451,7 +356,7 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Services
             _materialRepository.Update(materials);
 
             //cache
-            _cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
+            _cacheManager.RemoveByPattern(MATERIALS_PATTERN_KEY);
 
             //event notification
             foreach (var material in materials)
@@ -461,25 +366,25 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Services
         }
 
         /// <summary>
-        /// Get number of material (published and visible) in certain category
+        /// Get number of material in certain material group
         /// </summary>
-        /// <param name="categoryIds">Category identifiers</param>
-        /// <param name="storeId">Store identifier; 0 to load all records</param>
+        /// <param name="groupIds">Group identifiers</param>
+        /// <param name="warehouseId">Warehouse identifier; 0 to load all records</param>
         /// <returns>Number of materials</returns>
-        public virtual int GetNumberOfMaterialsInCategory(IList<int> categoryIds = null, int storeId = 0)
+        public int GetNumberOfMaterialsInGroup(IList<int> groupIds = null, int warehouseId = 0)
         {
-            //validate "categoryIds" parameter
-            if (categoryIds != null && categoryIds.Contains(0))
-                categoryIds.Remove(0);
+            //validate "groupIds" parameter
+            if (groupIds != null && groupIds.Contains(0))
+                groupIds.Remove(0);
 
             var query = _materialRepository.Table;
             query = query.Where(p => !p.Deleted);
 
-            //category filtering
-            if (categoryIds != null && categoryIds.Any())
+            //group filtering
+            if (groupIds != null && groupIds.Any())
             {
                 query = from p in query
-                        where (categoryIds.Contains(p.MaterialGroupId))
+                        where (groupIds.Contains(p.MaterialGroupId))
                         select p;
             }
 
@@ -516,12 +421,10 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Services
         /// </summary>
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
-        /// <param name="categoryIds">Category identifiers</param>
-        /// <param name="manufacturerId">Manufacturer identifier; 0 to load all records</param>
+        /// <param name="groupIds">Group identifiers</param>
         /// <param name="warehouseId">Warehouse identifier; 0 to load all records</param>
         /// <param name="keywords">Keywords</param>
         /// <param name="searchDescriptions">A value indicating whether to search by a specified "keyword" in material descriptions</param>
-        /// <param name="searchManufacturerPartNumber">A value indicating whether to search by a specified "keyword" in manufacturer part number</param>
         /// <param name="searchSku">A value indicating whether to search by a specified "keyword" in material SKU</param>
         /// <param name="languageId">Language identifier (search for text searching)</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
@@ -529,12 +432,10 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Services
         public virtual IPagedList<Material> SearchMaterials(
             int pageIndex = 0,
             int pageSize = int.MaxValue,
-            IList<int> categoryIds = null,
-            int manufacturerId = 0,
+            IList<int> groupIds = null,
             int warehouseId = 0,
             string keywords = null,
             bool searchDescriptions = false,
-            bool searchManufacturerPartNumber = true,
             bool searchSku = true,
             int languageId = 0,
             bool showHidden = false)
@@ -555,9 +456,9 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Services
                 }
             }
 
-            //validate "categoryIds" parameter
-            if (categoryIds != null && categoryIds.Contains(0))
-                categoryIds.Remove(0);
+            //validate "groupIds" parameter
+            if (groupIds != null && groupIds.Contains(0))
+                groupIds.Remove(0);
 
             //Access control list. Allowed customer roles
             var allowedCustomerRolesIds = _workContext.CurrentCustomer.GetCustomerRoleIds();
@@ -568,17 +469,17 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Services
             {
                 //stored procedures are enabled and supported by the database. 
                 //It's much faster than the LINQ implementation below 
-                materials = SearchMaterialsUseStoredProcedure(pageIndex, pageSize, categoryIds, manufacturerId, storeId, vendorId, warehouseId, keywords, searchDescriptions, searchManufacturerPartNumber, searchSku, allowedCustomerRolesIds, searchLocalizedValue, languageId, showHidden);
+                materials = SearchMaterialsUseStoredProcedure(pageIndex, pageSize, groupIds, manufacturerId, storeId, vendorId, warehouseId, keywords, searchDescriptions, searchManufacturerPartNumber, searchSku, allowedCustomerRolesIds, searchLocalizedValue, languageId, showHidden);
             }
             else
             {
                 //stored procedures aren't supported. Use LINQ
-                return SearchMaterialsUseLinq(pageIndex, pageSize, categoryIds, manufacturerId, storeId, vendorId, warehouseId, keywords, searchDescriptions, searchManufacturerPartNumber, searchSku, searchLocalizedValue, allowedCustomerRolesIds, languageId, showHidden);
+                return SearchMaterialsUseLinq(pageIndex, pageSize, groupIds, manufacturerId, storeId, vendorId, warehouseId, keywords, searchDescriptions, searchManufacturerPartNumber, searchSku, searchLocalizedValue, allowedCustomerRolesIds, languageId, showHidden);
             }
 
             return materials;*/
 
-            return SearchMaterialsUseLinq(pageIndex, pageSize, categoryIds, manufacturerId, warehouseId, keywords, searchDescriptions, searchManufacturerPartNumber, searchSku, searchLocalizedValue, allowedCustomerRolesIds, languageId, showHidden);
+            return SearchMaterialsUseLinq(pageIndex, pageSize, groupIds, warehouseId, keywords, searchDescriptions, searchSku, searchLocalizedValue, allowedCustomerRolesIds, languageId, showHidden);
         }
 
         /// <summary>
@@ -629,56 +530,43 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Services
         }
         */
 
+
         /// <summary>
-        /// Gets a material by SKU
+        /// Gets a material by code
         /// </summary>
-        /// <param name="sku">SKU</param>
+        /// <param name="code">Code</param>
         /// <returns>Material</returns>
-        public virtual Material GetMaterialBySku(string sku)
+        public virtual Material GetMaterialByCode(string code)
         {
-            if (string.IsNullOrEmpty(sku))
+            if (string.IsNullOrEmpty(code))
                 return null;
 
-            sku = sku.Trim();
+            code = code.Trim();
 
             var query = from p in _materialRepository.Table
                         orderby p.Id
                         where !p.Deleted &&
-                        p.Code == sku
+                        p.Code == code
                         select p;
             var material = query.FirstOrDefault();
             return material;
         }
 
         /// <summary>
-        /// Gets a materials by SKU array
+        /// Gets a materials by code array
         /// </summary>
-        /// <param name="skuArray">SKU array</param>
-        /// <param name="vendorId">Vendor ID; 0 to load all records</param>
+        /// <param name="codeArray">Code array</param>
         /// <returns>Materials</returns>
-        public IList<Material> GetMaterialsBySku(string[] skuArray, int vendorId = 0)
+        public IList<Material> GetMaterialsByCode(string[] codeArray)
         {
-            if (skuArray == null)
-                throw new ArgumentNullException(nameof(skuArray));
+            if (codeArray == null)
+                throw new ArgumentNullException(nameof(codeArray));
 
             var query = _materialRepository.Table;
-            query = query.Where(p => !p.Deleted && skuArray.Contains(p.Code));
+            query = query.Where(p => !p.Deleted && codeArray.Contains(p.Code));
 
             return query.ToList();
         }
-
-        /// <summary>
-        /// Gets number of materials by vendor identifier
-        /// </summary>
-        /// <param name="vendorId">Vendor identifier</param>
-        /// <returns>Number of materials</returns>
-        /*public int GetNumberOfMaterialsByVendorId(int vendorId)
-        {
-            if (vendorId == 0)
-                return 0;
-
-            return _materialRepository.Table.Count(p => p.VendorId == vendorId && !p.Deleted);
-        }*/
 
         #endregion
 

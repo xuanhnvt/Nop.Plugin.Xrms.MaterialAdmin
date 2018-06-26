@@ -71,7 +71,7 @@
                 <i class="fa fa-trash-o"></i>
                 @T("Admin.Common.Delete.Selected")
             </button>
-            @await Component.InvokeAsync("AdminWidget", new { widgetZone = "admin_product_list_buttons" })
+            @await Component.InvokeAsync("AdminWidget", new { widgetZone = "admin_material_list_buttons" })
         </div>
     </div>
 
@@ -90,15 +90,15 @@
                                         <nop-editor asp-for="SearchModel.SearchMaterialName" />
                                     </div>
                                 </div>
-                                <div class="form-group" @(Model.AvailableCategories.SelectionIsNotPossible() ? Html.Raw("style=\"display:none\"") : null)>
+                                <div class="form-group" @(Model.AvailableMaterialGroups.SelectionIsNotPossible() ? Html.Raw("style=\"display:none\"") : null)>
                                     <div class="col-md-4">
                                         <nop-label asp-for="SearchModel.SearchMaterialGroupId" />
                                     </div>
                                     <div class="col-md-8">
-                                        <nop-select asp-for="SearchModel.SearchMaterialGroupId" asp-items="Model.AvailableCategories" />
+                                        <nop-select asp-for="SearchModel.SearchMaterialGroupId" asp-items="Model.AvailableMaterialGroups" />
                                     </div>
                                 </div>
-                                <div class="form-group" @(Model.AvailableCategories.SelectionIsNotPossible() ? Html.Raw("style=\"display:none\"") : null)>
+                                <div class="form-group" @(Model.AvailableMaterialGroups.SelectionIsNotPossible() ? Html.Raw("style=\"display:none\"") : null)>
                                     <div class="col-md-4">
                                         <nop-label asp-for="SearchModel.SearchIncludeSubGroup" />
                                     </div>
@@ -109,14 +109,6 @@
                             </div>
 
                             <div class="col-md-7">
-                                <div class="form-group" @(Model.AvailableManufacturers.SelectionIsNotPossible() ? Html.Raw("style=\"display:none\"") : null)>
-                                    <div class="col-md-4">
-                                        <nop-label asp-for="SearchModel.SearchManufacturerId" />
-                                    </div>
-                                    <div class="col-md-8">
-                                        <nop-select asp-for="SearchModel.SearchManufacturerId" asp-items="Model.AvailableManufacturers" />
-                                    </div>
-                                </div>
                                 <div class="form-group" @(Model.AvailableWarehouses.SelectionIsNotPossible() ? Html.Raw("style=\"display:none\"") : null)>
                                     <div class="col-md-4">
                                         <nop-label asp-for="SearchModel.SearchWarehouseId" />
@@ -129,7 +121,7 @@
                         </div>
                         <div class="row">
                             <div class="col-md-7 col-md-offset-5">
-                                <button type="button" id="search-products" class="btn btn-primary btn-search">
+                                <button type="button" id="search-materials" class="btn btn-primary btn-search">
                                     <i class="fa fa-search"></i>
                                     @T("Admin.Common.Search")
                                 </button>
@@ -140,11 +132,11 @@
 
                 <div class="panel panel-default">
                     <div class="panel-body">
-                        <div id="products-grid"></div>
+                        <div id="materials-grid"></div>
 
                         <script type="text/javascript">
                             $(document).ready(function() {
-                                $("#products-grid").kendoGrid({
+                                $("#materials-grid").kendoGrid({
                                     dataSource: {
                                         type: "json",
                                         transport: {
@@ -190,12 +182,12 @@
                                             template: "<input type='checkbox' value='#=Id#' class='checkboxGroups'/>",
                                             width: 50
                                         },
-                                        //{
-                                            //field: "PictureThumbnailUrl",
-                                            //title: "@T("Admin.Catalog.Products.Fields.PictureThumbnailUrl")",
-                                            //template: '<img src="#=PictureThumbnailUrl#" />',
-                                            //width: 100
-                                        //},
+                                        {
+                                            field: "PictureThumbnailUrl",
+                                            title: "@T("Xrms.Admin.Catalog.Materials.Fields.Picture")",
+                                            template: '<img src="#=PictureThumbnailUrl#" />',
+                                            width: 100
+                                        },
                                         {
                                             field: "Code",
                                             title: "@T("Xrms.Admin.Catalog.Materials.Fields.Code")",
@@ -207,9 +199,7 @@
                                         }, {
                                             field: "Cost",
                                             title: "@T("Xrms.Admin.Catalog.Materials.Fields.Cost")",
-                                            width: 150,
-                                            //if not a grouped product, then display
-                                            //template: "# if(ProductTypeId != @((int) ProductType.GroupedProduct)) {# #:Price# #}  #"
+                                            width: 150
                                         }, {
                                             field: "StockQuantityStr",
                                             title: "@T("Xrms.Admin.Catalog.Materials.Fields.StockQuantity")",
@@ -219,10 +209,10 @@
                                             title: "@T("Xrms.Admin.Catalog.Materials.Fields.Unit")",
                                             width: 100
                                         }, {
-                                            field: "Description",
-                                            title: "@T("Xrms.Admin.Catalog.Materials.Fields.Description")",
+                                            field: "Group",
+                                            title: "@T("Xrms.Admin.Catalog.Materials.Fields.MaterialGroup")",
                                             width: 300,
-                                            template: "#=Description#"
+                                            template: "#=Group#"
                                         }, {
                                             field: "Id",
                                             title: "@T("Admin.Common.Edit")",
@@ -246,9 +236,9 @@
 
         $(document).ready(function () {
             //search button
-            $('#search-products').click(function () {
+            $('#search-materials').click(function () {
                 //search
-                var grid = $('#products-grid').data('kendoGrid');
+                var grid = $('#materials-grid').data('kendoGrid');
                 grid.dataSource.page(1); //new search. Set page size to 1
                 //grid.dataSource.read(); we already loaded the grid above using "page" function
                 //clear selected checkboxes
@@ -259,7 +249,7 @@
 
             $("#@Html.IdFor(model => model.SearchModel.SearchMaterialName)").keydown(function (event) {
                 if (event.keyCode === 13) {
-                    $("#search-products").click();
+                    $("#search-materials").click();
                     return false;
                 }
             });
@@ -280,7 +270,7 @@
                     data: postData,
                     complete: function(data) {
                         //reload grid
-                        var grid = $('#products-grid').data('kendoGrid');
+                        var grid = $('#materials-grid').data('kendoGrid');
                         grid.dataSource.read();
                     },
                     error: function(xhr, ajaxOptions, thrownError) {
@@ -296,7 +286,7 @@
             });
 
             //wire up checkboxes.
-            $('#products-grid').on('change', 'input[type=checkbox][id!=mastercheckbox][class=checkboxGroups]', function (e) {
+            $('#materials-grid').on('change', 'input[type=checkbox][id!=mastercheckbox][class=checkboxGroups]', function (e) {
                 var $check = $(this);
                 if ($check.is(":checked") == true) {
                     var checked = jQuery.inArray($check.val(), selectedIds);
@@ -323,7 +313,6 @@
                 SearchMaterialName: $('#@Html.IdFor(model => model.SearchModel.SearchMaterialName)').val(),
                 SearchMaterialGroupId: $('#@Html.IdFor(model => model.SearchModel.SearchMaterialGroupId)').val(),
                 SearchIncludeSubGroup: $('#@Html.IdFor(model => model.SearchModel.SearchIncludeSubGroup)').is(':checked'),
-                SearchManufacturerId: $('#@Html.IdFor(model => model.SearchModel.SearchManufacturerId)').val(),
                 SearchWarehouseId: $('#@Html.IdFor(model => model.SearchModel.SearchWarehouseId)').val()
             };
             addAntiForgeryToken(data);
@@ -331,7 +320,7 @@
         }
 
         function onDataBound(e) {
-            $('#products-grid input[type=checkbox][id!=mastercheckbox][class=checkboxGroups]').each(function () {
+            $('#materials-grid input[type=checkbox][id!=mastercheckbox][class=checkboxGroups]').each(function () {
                 var currentId = $(this).val();
                 var checked = jQuery.inArray(currentId, selectedIds);
                 //set checked based on if current checkbox's value is in selectedIds.
@@ -342,14 +331,14 @@
         }
 
         function updateMasterCheckbox() {
-            var numChkBoxes = $('#products-grid input[type=checkbox][id!=mastercheckbox][class=checkboxGroups]').length;
-            var numChkBoxesChecked = $('#products-grid input[type=checkbox][id!=mastercheckbox][class=checkboxGroups]:checked').length;
+            var numChkBoxes = $('#materials-grid input[type=checkbox][id!=mastercheckbox][class=checkboxGroups]').length;
+            var numChkBoxesChecked = $('#materials-grid input[type=checkbox][id!=mastercheckbox][class=checkboxGroups]:checked').length;
             $('#mastercheckbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
         }
     </script>
 </form>
 
-@*import products form*@
+@*import materials form*@
 <div id="importexcel-window" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="importexcel-window-title">
     <div class="modal-dialog">
         <div class="modal-content">

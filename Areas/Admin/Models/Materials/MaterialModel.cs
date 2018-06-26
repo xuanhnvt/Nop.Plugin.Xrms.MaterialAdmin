@@ -39,7 +39,7 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Areas.Admin.Models.Materials
         public string Code { get; set; }
 
         [NopResourceDisplayName("Xrms.Admin.Catalog.Materials.Fields.Supplier")]
-        public string ManufacturerPartNumber { get; set; }
+        public int SupplierId { get; set; }
 
         [NopResourceDisplayName("Xrms.Admin.Catalog.Materials.Fields.Warehouse")]
         public int WarehouseId { get; set; }

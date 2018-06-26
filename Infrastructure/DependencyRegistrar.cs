@@ -40,8 +40,14 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Infrastructure
             .WithParameter(ResolvedParameter.ForNamed<IDbContext>(CONTEXT_NAME))
             .InstancePerLifetimeScope();
 
+            builder.RegisterType<EfRepository<Supplier>>()
+            .As<IRepository<Supplier>>()
+            .WithParameter(ResolvedParameter.ForNamed<IDbContext>(CONTEXT_NAME))
+            .InstancePerLifetimeScope();
+
             builder.RegisterType<MaterialGroupService>().As<IMaterialGroupService>().InstancePerLifetimeScope();
             builder.RegisterType<MaterialService>().As<IMaterialService>().InstancePerLifetimeScope();
+            builder.RegisterType<SupplierService>().As<ISupplierService>().InstancePerLifetimeScope();
         }
         public int Order
         {

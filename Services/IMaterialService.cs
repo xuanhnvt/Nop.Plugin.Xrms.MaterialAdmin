@@ -57,24 +57,22 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Services
         void UpdateMaterials(IList<Material> materials);
 
         /// <summary>
-        /// Get number of material (published and visible) in certain category
+        /// Get number of material in certain material group
         /// </summary>
-        /// <param name="categoryIds">Category identifiers</param>
-        /// <param name="storeId">Store identifier; 0 to load all records</param>
+        /// <param name="groupIds">Group identifiers</param>
+        /// <param name="warehouseId">Warehouse identifier; 0 to load all records</param>
         /// <returns>Number of materials</returns>
-        int GetNumberOfMaterialsInCategory(IList<int> categoryIds = null, int storeId = 0);
+        int GetNumberOfMaterialsInGroup(IList<int> groupIds = null, int warehouseId = 0);
 
         /// <summary>
         /// Search materials
         /// </summary>
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
-        /// <param name="categoryIds">Category identifiers</param>
-        /// <param name="manufacturerId">Manufacturer identifier; 0 to load all records</param>
+        /// <param name="groupIds">Group identifiers</param>
         /// <param name="warehouseId">Warehouse identifier; 0 to load all records</param>
         /// <param name="keywords">Keywords</param>
         /// <param name="searchDescriptions">A value indicating whether to search by a specified "keyword" in material descriptions</param>
-        /// <param name="searchManufacturerPartNumber">A value indicating whether to search by a specified "keyword" in manufacturer part number</param>
         /// <param name="searchSku">A value indicating whether to search by a specified "keyword" in material SKU</param>
         /// <param name="languageId">Language identifier (search for text searching)</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
@@ -82,12 +80,10 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Services
         IPagedList<Material> SearchMaterials(
             int pageIndex = 0,
             int pageSize = int.MaxValue,
-            IList<int> categoryIds = null,
-            int manufacturerId = 0,
+            IList<int> groupIds = null,
             int warehouseId = 0,
             string keywords = null,
             bool searchDescriptions = false,
-            bool searchManufacturerPartNumber = true,
             bool searchSku = true,
             int languageId = 0,
             bool showHidden = false);
@@ -102,26 +98,18 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Services
         //IPagedList<Material> GetLowStockMaterials(int vendorId = 0, int pageIndex = 0, int pageSize = int.MaxValue);
 
         /// <summary>
-        /// Gets a material by SKU
+        /// Gets a material by code
         /// </summary>
-        /// <param name="sku">SKU</param>
+        /// <param name="code">Code</param>
         /// <returns>Material</returns>
-        Material GetMaterialBySku(string sku);
+        Material GetMaterialByCode(string code);
 
         /// <summary>
-        /// Gets a materials by SKU array
+        /// Gets a materials by code array
         /// </summary>
-        /// <param name="skuArray">SKU array</param>
-        /// <param name="vendorId">Vendor ID; 0 to load all records</param>
+        /// <param name="codeArray">Code array</param>
         /// <returns>Materials</returns>
-        IList<Material> GetMaterialsBySku(string[] skuArray, int vendorId = 0);
-
-        /// <summary>
-        /// Gets number of materials by vendor identifier
-        /// </summary>
-        /// <param name="vendorId">Vendor identifier</param>
-        /// <returns>Number of materials</returns>
-        //int GetNumberOfMaterialsByVendorId(int vendorId);
+        IList<Material> GetMaterialsByCode(string[] codeArray);
 
         #endregion
 

@@ -12,7 +12,7 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Areas.Admin.Validators
     {
         public MaterialGroupValidator(ILocalizationService localizationService, IDbContext dbContext)
         {
-            RuleFor(x => x.Name).NotEmpty().WithMessage(localizationService.GetResource("Admin.Catalog.Categories.Fields.Name.Required"));
+            RuleFor(x => x.Name).NotEmpty().WithMessage(localizationService.GetResource("Xrms.Admin.Catalog.MaterialGroups.Fields.Name.Required"));
             SetDatabaseValidationRules<MaterialGroup>(dbContext);
         }
     }

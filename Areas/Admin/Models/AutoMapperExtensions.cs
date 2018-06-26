@@ -3,6 +3,7 @@ using Nop.Plugin.Xrms.MaterialAdmin.Domain;
 using Nop.Plugin.Xrms.MaterialAdmin.Areas.Admin.Models.MaterialGroups;
 using Nop.Core.Infrastructure.Mapper;
 using Nop.Plugin.Xrms.MaterialAdmin.Areas.Admin.Models.Materials;
+using Nop.Plugin.Xrms.MaterialAdmin.Areas.Admin.Models.Suppliers;
 
 namespace Nop.Plugin.Xrms.MaterialAdmin.Areas.Admin.Models
 {
@@ -111,5 +112,52 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Areas.Admin.Models
         }
 
         #endregion // Material
+
+        #region Supplier
+
+        // from entity to view model
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public static SupplierListItemViewModel ToListItemViewModel(this Supplier entity)
+        {
+            return entity.MapTo<Supplier, SupplierListItemViewModel>();
+        }
+
+        /*public static SupplierDetailsPageViewModel ToDetailsViewModel(this Supplier entity)
+        {
+            return entity.MapTo<Supplier, SupplierDetailsPageViewModel>();
+        }
+
+        public static SupplierDetailsPageViewModel ToDetailsViewModel(this Supplier entity, SupplierDetailsPageViewModel viewModel)
+        {
+            return entity.MapTo(viewModel);
+        }*/
+
+        // from action model to entity
+        public static Supplier ToEntity(this SupplierModel model)
+        {
+            return model.MapTo<SupplierModel, Supplier>();
+        }
+
+        public static Supplier ToEntity(this SupplierModel model, Supplier entity)
+        {
+            return model.MapTo(entity);
+        }
+
+        // from action model to view model
+        /*public static SupplierDetailsPageViewModel ToDetailsViewModel(this SupplierModel model)
+        {
+            return model.MapTo<SupplierModel, SupplierDetailsPageViewModel>();
+        }
+
+        public static SupplierDetailsPageViewModel ToDetailsViewModel(this SupplierModel model, SupplierDetailsPageViewModel viewModel)
+        {
+            return model.MapTo(viewModel);
+        }*/
+
+        #endregion // Supplier
     }
 }

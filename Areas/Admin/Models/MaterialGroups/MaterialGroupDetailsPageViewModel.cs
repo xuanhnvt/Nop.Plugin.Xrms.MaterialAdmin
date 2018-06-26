@@ -43,6 +43,7 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Areas.Admin.Models.MaterialGroups
         {
             public string Name { get; set; }
             public int StockQuantity { get; set; }
+            public string PictureThumbnailUrl { get; set; }
         }
 
         public partial class AddMaterialsPopupViewModel : BaseNopModel
@@ -75,8 +76,6 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Areas.Admin.Models.MaterialGroups
             public int SearchMaterialGroupId { get; set; }
             [NopResourceDisplayName("Xrms.Admin.Catalog.Materials.List.Search.IncludeSubGroup")]
             public bool SearchIncludeSubGroup { get; set; }
-            [NopResourceDisplayName("Xrms.Admin.Catalog.Materials.List.Search.Supplier")]
-            public int SearchManufacturerId { get; set; }
             [NopResourceDisplayName("Xrms.Admin.Catalog.Materials.List.Search.Warehouse")]
             public int SearchWarehouseId { get; set; }
         }

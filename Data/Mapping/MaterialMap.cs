@@ -17,8 +17,6 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Data.Mapping
             this.ToTable("Material");
             this.HasKey(c => c.Id);
             this.Property(c => c.Name).IsRequired().HasMaxLength(400);
-            //this.Property(c => c.Code).IsRequired().HasMaxLength(400);
-            //this.Property(c => c.MaterialGroupId).IsRequired().HasDefaultValueSql("1");
             this.HasRequired(c => c.MaterialGroup).WithMany(g => g.Materials).HasForeignKey(c => c.MaterialGroupId);
         }
     }

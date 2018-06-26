@@ -38,6 +38,7 @@
                                     model: {
                                         id: "Id",
                                         fields: {
+                                            PictureThumbnailUrl: { editable: false, type: "string" },
                                             Name: { editable: false, type: "string" },
                                             StockQuantity: { editable: false, type: "number" },
                                             Id: { editable: false, type: "number" }
@@ -71,6 +72,11 @@
                             scrollable: false,
                             columns: [
                                 {
+                                    field: "PictureThumbnailUrl",
+                                    title: "@T("Xrms.Admin.Catalog.Materials.Fields.Picture")",
+                                    template: '<img src="#=PictureThumbnailUrl#" />',
+                                    width: 100
+                                }, {
                                     field: "Name",
                                     title: "@T("Xrms.Admin.Catalog.MaterialGroups.Details.Tabs.Materials.Columns.Material")"
                                 }, {

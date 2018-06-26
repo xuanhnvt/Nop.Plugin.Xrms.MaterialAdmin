@@ -16,6 +16,7 @@
     <MSBuild Projects="$(MSBuildProjectDirectory)\..\..\Build\ClearPluginAssemblies.proj" Properties="PluginPath=$(MSBuildProjectDirectory)\$(OutDir)" Targets="NopClear" />
   </Target>
   <ItemGroup>
+    <None Remove="Areas\Admin\Views\Supplier\List.cshtml" />
     <None Remove="Areas\Admin\Views\MaterialGroup\AddMaterialsPopup.cshtml" />
     <None Remove="Areas\Admin\Views\MaterialGroup\Create.cshtml" />
     <None Remove="Areas\Admin\Views\MaterialGroup\Edit.cshtml" />
@@ -32,6 +33,10 @@
     <None Remove="Areas\Admin\Views\_ViewImports.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Areas\Admin\Views\Supplier\List.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
     <Content Include="Areas\Admin\Views\MaterialGroup\Create.cshtml">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

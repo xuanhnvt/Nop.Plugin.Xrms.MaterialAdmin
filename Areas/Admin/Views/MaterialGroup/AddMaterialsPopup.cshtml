@@ -63,14 +63,6 @@
                                         <nop-select asp-for="SearchModel.SearchWarehouseId" asp-items="Model.AvailableWarehouses" />
                                     </div>
                                 </div>
-                                <div class="form-group" @(Model.AvailableSuppliers.SelectionIsNotPossible() ? Html.Raw("style=\"display:none\"") : null)>
-                                    <div class="col-sm-5">
-                                        <nop-label asp-for="SearchModel.SearchManufacturerId" />
-                                    </div>
-                                    <div class="col-sm-7">
-                                        <nop-select asp-for="SearchModel.SearchManufacturerId" asp-items="Model.AvailableSuppliers" />
-                                    </div>
-                                </div>
                             </div>
                         </div>
                         <div class="row">
@@ -133,6 +125,12 @@
                                         template: "<input type='checkbox' name='SelectedMaterialIds' value='#=Id#' class='checkboxGroups' />",
                                         attributes: { style: "text-align:center" },
                                         width: 50
+                                    },
+                                    {
+                                        field: "PictureThumbnailUrl",
+                                        title: "@T("Xrms.Admin.Catalog.Materials.Fields.Picture")",
+                                        template: '<img src="#=PictureThumbnailUrl#" />',
+                                        width: 100
                                     }, {
                                         field: "Name",
                                         title: "@T("Xrms.Admin.Catalog.Materials.Fields.Name")"
@@ -236,7 +234,6 @@
                                 SearchMaterialName: $('#@Html.IdFor(model => model.SearchModel.SearchMaterialName)').val(),
                                 SearchMaterialGroupId: $('#@Html.IdFor(model => model.SearchModel.SearchMaterialGroupId)').val(),
                                 SearchIncludeSubGroup: $('#@Html.IdFor(model => model.SearchModel.SearchIncludeSubGroup)').is(':checked'),
-                                SearchManufacturerId: $('#@Html.IdFor(model => model.SearchModel.SearchManufacturerId)').val(),
                                 SearchWarehouseId: $('#@Html.IdFor(model => model.SearchModel.SearchWarehouseId)').val()
                             };
                             addAntiForgeryToken(data);

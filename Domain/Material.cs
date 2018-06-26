@@ -43,9 +43,14 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Domain
         public int PictureId { get; set; }
 
         /// <summary>
-        /// Gets or sets the manufacturer part number
+        /// Gets or sets the supplier identifier
         /// </summary>
-        public string ManufacturerPartNumber { get; set; }
+        public int SupplierId { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating how to manage inventory
+        /// </summary>
+        public int ManageInventoryMethodId { get; set; }
 
         /// <summary>
         /// Gets or sets a warehouse identifier
@@ -58,7 +63,7 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Domain
         public int StockQuantity { get; set; }
 
         /// <summary>
-        /// Gets or sets the used quantity
+        /// Gets or sets the used quantity from last confirmation
         /// </summary>
         public int UsedQuantity { get; set; }
 

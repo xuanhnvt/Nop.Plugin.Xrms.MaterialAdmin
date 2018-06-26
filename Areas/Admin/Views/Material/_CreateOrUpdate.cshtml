@@ -18,7 +18,7 @@
             <nop-tab asp-name="tab-info" asp-title="@T("Xrms.Admin.Catalog.Materials.Details.Tabs.Info")" asp-default="true">@await Html.PartialAsync("~/Plugins/Xrms.MaterialAdmin/Areas/Admin/Views/Material/_CreateOrUpdate.Info.cshtml", Model)</nop-tab>
             @*@if (Model.Id > 0)
         {
-            <nop-tab asp-name="tab-stock-quantity-history" asp-title="@T("Admin.Catalog.Products.StockQuantityHistory")" class="@(Model.ProductEditorSettingsModel.StockQuantityHistory ? "" : "advanced-setting")">@await Html.PartialAsync("_CreateOrUpdate._StockQuantityHistory", Model)</nop-tab>
+            <nop-tab asp-name="tab-stock-quantity-history" asp-title="@T("Xrms.Admin.Catalog.Materials.Details.Tabs.StockQuantityHistory")" class="@(Model.ProductEditorSettingsModel.StockQuantityHistory ? "" : "advanced-setting")">@await Html.PartialAsync("_CreateOrUpdate._StockQuantityHistory", Model)</nop-tab>
         }*@
         </nop-tabs>
     </div>

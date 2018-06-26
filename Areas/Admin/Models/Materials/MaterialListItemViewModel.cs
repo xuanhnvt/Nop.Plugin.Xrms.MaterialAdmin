@@ -15,7 +15,7 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Areas.Admin.Models.Materials
         }
 
         //picture thumbnail
-        //public string PictureThumbnailUrl { get; set; }
+        public string PictureThumbnailUrl { get; set; }
 
         public string Name { get; set; }
 
@@ -30,5 +30,7 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Areas.Admin.Models.Materials
         public decimal Cost { get; set; }
 
         public int DisplayOrder { get; set; }
+
+        public string Group { get; set; }
     }
 }

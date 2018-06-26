@@ -5,6 +5,7 @@ using Nop.Core;
 using Nop.Data;
 using Nop.Plugin.Xrms.MaterialAdmin.Domain;
 using Nop.Plugin.Xrms.MaterialAdmin.Data.Mapping;
+using Nop.Data.Mapping.Catalog;
 
 namespace Nop.Plugin.Xrms.MaterialAdmin.Data
 {
@@ -23,6 +24,8 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Data
             modelBuilder.Configurations.Add(new MaterialMap());
 
             modelBuilder.Configurations.Add(new MaterialQuantityHistoryMap());
+
+            modelBuilder.Configurations.Add(new SupplierMap());
 
             base.OnModelCreating(modelBuilder);
         }
@@ -55,6 +58,9 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Data
             this.DropPluginTable(tableName);
 
             tableName = this.GetTableName<MaterialGroup>();
+            this.DropPluginTable(tableName);
+
+            tableName = this.GetTableName<Supplier>();
             this.DropPluginTable(tableName);
 
         }

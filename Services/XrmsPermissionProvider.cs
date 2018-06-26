@@ -12,9 +12,10 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Services
     public partial class XrmsPermissionProvider : IPermissionProvider
     {
         //admin area permissions
+        public static readonly PermissionRecord ManageSuppliers = new PermissionRecord { Name = "Admin area. XRMS Manage Suppliers", SystemName = "XrmsManageSuppliers", Category = "Catalog" };
         public static readonly PermissionRecord ManageMaterials = new PermissionRecord { Name = "Admin area. XRMS Manage Materials", SystemName = "XrmsManageMaterials", Category = "Catalog" };
         public static readonly PermissionRecord ManageMaterialGroups = new PermissionRecord { Name = "Admin area. XRMS Manage Material Groups", SystemName = "XrmsManageMaterialGroups", Category = "Catalog" };
-        
+
         //public store permissions
         /*public static readonly PermissionRecord DisplayPrices = new PermissionRecord { Name = "Public store. Display Prices", SystemName = "DisplayPrices", Category = "PublicStore" };
         public static readonly PermissionRecord EnableShoppingCart = new PermissionRecord { Name = "Public store. Enable shopping cart", SystemName = "EnableShoppingCart", Category = "PublicStore" };
@@ -30,6 +31,7 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Services
         {
             return new[]
             {
+                ManageSuppliers,
                 ManageMaterials,
                 ManageMaterialGroups
             };
@@ -48,6 +50,7 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Services
                     CustomerRoleSystemName = SystemCustomerRoleNames.Administrators,
                     PermissionRecords = new[]
                     {
+                        ManageSuppliers,
                         ManageMaterials,
                         ManageMaterialGroups
                     }
