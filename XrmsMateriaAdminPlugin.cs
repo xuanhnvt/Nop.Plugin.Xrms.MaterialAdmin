@@ -126,10 +126,15 @@ namespace Nop.Plugin.Xrms.MaterialAdmin
             #endregion // Material Groups
 
             #region Materials
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.StockQuantityHistory.Messages.Edit", "The stock quantity has been edited.");
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.StockQuantityHistory.Messages.EditWarehouse", "Materials have been moved {0} {1}.");
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.StockQuantityHistory.Messages.EditWarehouse.Old", "from the {0}");
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.StockQuantityHistory.Messages.EditWarehouse.New", "to the {0}");
 
             this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.Notifications.Created", "The new material has been created successfully.");
             this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.Notifications.Updated", "The material has been updated successfully.");
             this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.Notifications.Deleted", "The material has been deleted successfully.");
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.Notifications.Copied", "The material has been copied successfully.");
 
             this.AddOrUpdatePluginLocaleResource("Xrms.ActivityLog.AddNewMaterial", "Added a new material ('{0}')");
             this.AddOrUpdatePluginLocaleResource("Xrms.ActivityLog.EditMaterial", "Edited a material ('{0}')");
@@ -151,6 +156,7 @@ namespace Nop.Plugin.Xrms.MaterialAdmin
             this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.Details.Tabs.Info.Sections.CommonInfo", "General information");
             this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.Details.Tabs.Info.Sections.Inventory", "Inventory");
             this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.Details.Tabs.StockQuantityHistory", "Stock quantity history");
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.Details.Tabs.StockQuantityHistory.Hint", "Here you can see a history of the material stock quantity changes.");
 
             this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.Name", "Name");
             this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.Name.Required", "Please provide a name.");
@@ -162,12 +168,20 @@ namespace Nop.Plugin.Xrms.MaterialAdmin
             this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.Supplier", "Manufacturer");
             this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.ManageInventoryMethod", "Inventory method");
             this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.Warehouse", "Warehouse");
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.Warehouse.None", "None");
             this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.StockQuantity", "Stock Quantity");
             this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.UsedQuantity", "Used Quantity");
             this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.MinStockQuantity", "Minimum Quantity");
             this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.Unit", "Unit");
             this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.Cost", "Cost");
             this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.AdminComment", "Admin comment");
+
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.StockQuantityHistory.Fields.Warehouse", "Warehouse");
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.StockQuantityHistory.Fields.Combination", "Combination");
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.StockQuantityHistory.Fields.QuantityAdjustment", "Quantity Adjustment");
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.StockQuantityHistory.Fields.StockQuantity", "Stock Quantity");
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.StockQuantityHistory.Fields.Message", "Message");
+            this.AddOrUpdatePluginLocaleResource("Xrms.Admin.Catalog.Materials.StockQuantityHistory.Fields.CreatedOn", "Datetime");
 
             #endregion // Materials
 
@@ -308,10 +322,15 @@ namespace Nop.Plugin.Xrms.MaterialAdmin
             #endregion // Material Groups
 
             #region Materials
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.StockQuantityHistory.Messages.Edit");
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.StockQuantityHistory.Messages.EditWarehouse");
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.StockQuantityHistory.Messages.EditWarehouse.Old");
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.StockQuantityHistory.Messages.EditWarehouse.New");
 
             this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.Notifications.Created");
             this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.Notifications.Updated");
             this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.Notifications.Deleted");
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.Notifications.Copied");
 
             this.DeletePluginLocaleResource("Xrms.ActivityLog.AddNewMaterial");
             this.DeletePluginLocaleResource("Xrms.ActivityLog.EditMaterial");
@@ -333,6 +352,7 @@ namespace Nop.Plugin.Xrms.MaterialAdmin
             this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.Details.Tabs.Info.Sections.CommonInfo");
             this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.Details.Tabs.Info.Sections.Inventory");
             this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.Details.Tabs.StockQuantityHistory");
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.Details.Tabs.StockQuantityHistory.Hint");
 
             this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.Name");
             this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.Name.Required");
@@ -344,12 +364,20 @@ namespace Nop.Plugin.Xrms.MaterialAdmin
             this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.Supplier");
             this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.ManageInventoryMethod");
             this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.Warehouse");
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.Warehouse.None");
             this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.StockQuantity");
             this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.UsedQuantity");
             this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.MinStockQuantity");
             this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.Unit");
             this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.Cost");
             this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.Fields.AdminComment");
+
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.StockQuantityHistory.Fields.Warehouse");
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.StockQuantityHistory.Fields.Combination");
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.StockQuantityHistory.Fields.QuantityAdjustment");
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.StockQuantityHistory.Fields.StockQuantity");
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.StockQuantityHistory.Fields.Message");
+            this.DeletePluginLocaleResource("Xrms.Admin.Catalog.Materials.StockQuantityHistory.Fields.CreatedOn");
 
             #endregion // Materials
 

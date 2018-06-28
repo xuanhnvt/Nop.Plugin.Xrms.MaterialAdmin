@@ -67,7 +67,45 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Areas.Admin.Models.Materials
         [NopResourceDisplayName("Xrms.Admin.Catalog.Materials.Fields.Cost")]
         public decimal Cost { get; set; }
 
+        public StockQuantityHistorySearchModel StockQuantityHistorySearch { get; set; }
+
         #region Nested classes
+
+        #region Stock quantity history
+
+        public partial class StockQuantityHistorySearchModel : BaseNopModel
+        {
+            //[NopResourceDisplayName("Xrms.Admin.Catalog.Materials.List.Search.MaterialName")]
+            public int MaterialId { get; set; }
+
+            [NopResourceDisplayName("Xrms.Admin.Catalog.Materials.List.Search.Warehouse")]
+            public int WarehouseId { get; set; }
+
+        }
+
+        public partial class StockQuantityHistoryListItemViewModel : BaseNopEntityModel
+        {
+            [NopResourceDisplayName("Xrms.Admin.Catalog.Materials.StockQuantityHistory.Fields.Warehouse")]
+            public string WarehouseName { get; set; }
+
+            [NopResourceDisplayName("Xrms.Admin.Catalog.Materials.StockQuantityHistory.Fields.Combination")]
+            public string AttributeCombination { get; set; }
+
+            [NopResourceDisplayName("Xrms.Admin.Catalog.Materials.StockQuantityHistory.Fields.QuantityAdjustment")]
+            public int QuantityAdjustment { get; set; }
+
+            [NopResourceDisplayName("Xrms.Admin.Catalog.Materials.StockQuantityHistory.Fields.StockQuantity")]
+            public int StockQuantity { get; set; }
+
+            [NopResourceDisplayName("Xrms.Admin.Catalog.Materials.StockQuantityHistory.Fields.Message")]
+            public string Message { get; set; }
+
+            [NopResourceDisplayName("Xrms.Admin.Catalog.Materials.StockQuantityHistory.Fields.CreatedOn")]
+            [UIHint("DecimalNullable")]
+            public DateTime CreatedOn { get; set; }
+        }
+
+        #endregion
 
         #endregion
     }

@@ -631,7 +631,7 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Services
                 query = query.Where(historyEntry => historyEntry.CombinationId == combinationId);
 
             query = query.OrderByDescending(historyEntry => historyEntry.CreatedOnUtc).ThenByDescending(historyEntry => historyEntry.Id);
-
+            
             return new PagedList<MaterialQuantityHistory>(query, pageIndex, pageSize);
         }
 

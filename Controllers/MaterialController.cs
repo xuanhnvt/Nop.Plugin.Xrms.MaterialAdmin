@@ -60,11 +60,11 @@ namespace Nop.Web.Areas.Admin.Controllers
 
         private readonly IMaterialService _materialService;
         private readonly IMaterialGroupService _materialGroupService;
-        private readonly IProductService _productService;
+        private readonly ISupplierService _supplierService;
         private readonly IWorkContext _workContext;
         private readonly ILocalizationService _localizationService;
         private readonly IPictureService _pictureService;
-        private readonly ICopyProductService _copyProductService;
+        //private readonly ICopyMaterialService _copyMaterialService;
         private readonly IPdfService _pdfService;
         private readonly IExportManager _exportManager;
         private readonly IImportManager _importManager;
@@ -80,11 +80,11 @@ namespace Nop.Web.Areas.Admin.Controllers
 
         public MaterialController(IMaterialService materialService,
             IMaterialGroupService materialGroupService,
-            IProductService productService,
+            ISupplierService supplierService,
             IWorkContext workContext,
             ILocalizationService localizationService,
             IPictureService pictureService,
-            ICopyProductService copyProductService,
+            //ICopyMaterialService copyMaterialService,
             IPdfService pdfService,
             IExportManager exportManager,
             IImportManager importManager,
@@ -96,11 +96,11 @@ namespace Nop.Web.Areas.Admin.Controllers
         {
             this._materialService = materialService;
             this._materialGroupService = materialGroupService;
-            this._productService = productService;
+            this._supplierService = supplierService;
             this._workContext = workContext;
             this._localizationService = localizationService;
             this._pictureService = pictureService;
-            this._copyProductService = copyProductService;
+            //this._copyMaterialService = copyMaterialService;
             this._pdfService = pdfService;
             this._exportManager = exportManager;
             this._importManager = importManager;
@@ -130,6 +130,28 @@ namespace Nop.Web.Areas.Admin.Controllers
                 model.AvailableMaterialGroups.Add(item);
         }
 
+        protected virtual void PrepareAvailableWarehouses(MaterialDetailsPageViewModel model)
+        {
+            if (model == null)
+                throw new ArgumentNullException(nameof(model));
+
+            var warehouses = _shippingService.GetAllWarehouses();
+            model.AvailableWarehouses.Add(new SelectListItem
+            {
+                Text = _localizationService.GetResource("Xrms.Admin.Catalog.Materials.Fields.Warehouse.None"),
+                Value = "0"
+            });
+
+            foreach (var warehouse in warehouses)
+            {
+                model.AvailableWarehouses.Add(new SelectListItem
+                {
+                    Text = warehouse.Name,
+                    Value = warehouse.Id.ToString()
+                });
+            }
+        }
+
         protected virtual List<int> GetChildGroupIds(int parentGroupId)
         {
             var groupsIds = new List<int>();
@@ -142,108 +164,11 @@ namespace Nop.Web.Areas.Admin.Controllers
             return groupsIds;
         }
 
-        protected virtual void SaveProductWarehouseInventory(Product product, ProductModel model)
-        {
-            if (product == null)
-                throw new ArgumentNullException(nameof(product));
-
-            if (model.ManageInventoryMethodId != (int)ManageInventoryMethod.ManageStock)
-                return;
-
-            if (!model.UseMultipleWarehouses)
-                return;
-
-            var warehouses = _shippingService.GetAllWarehouses();
-
-            var formData = this.Request.Form.ToDictionary(x => x.Key, x => x.Value.ToString());
-
-            foreach (var warehouse in warehouses)
-            {
-                // parse stock quantity
-                var stockQuantity = 0;
-                foreach (var formKey in formData.Keys)
-                {
-                    if (formKey.Equals($"warehouse_qty_{warehouse.Id}", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        int.TryParse(formData[formKey], out stockQuantity);
-                        break;
-                    }
-                }
-
-                // parse reserved quantity
-                var reservedQuantity = 0;
-                foreach (var formKey in formData.Keys)
-                    if (formKey.Equals($"warehouse_reserved_{warehouse.Id}", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        int.TryParse(formData[formKey], out reservedQuantity);
-                        break;
-                    }
-
-                // parse "used" field
-                var used = false;
-                foreach (var formKey in formData.Keys)
-                    if (formKey.Equals($"warehouse_used_{warehouse.Id}", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        int.TryParse(formData[formKey], out int tmp);
-                        used = tmp == warehouse.Id;
-                        break;
-                    }
-
-                // quantity change history message
-                var message = $"{_localizationService.GetResource("Admin.StockQuantityHistory.Messages.MultipleWarehouses")} {_localizationService.GetResource("Admin.StockQuantityHistory.Messages.Edit")}";
-
-                var existingPwI = product.ProductWarehouseInventory.FirstOrDefault(x => x.WarehouseId == warehouse.Id);
-                if (existingPwI != null)
-                {
-                    if (used)
-                    {
-                        var previousStockQuantity = existingPwI.StockQuantity;
-
-                        // update existing record
-                        existingPwI.StockQuantity = stockQuantity;
-                        existingPwI.ReservedQuantity = reservedQuantity;
-                        _productService.UpdateProduct(product);
-
-                        // quantity change history
-                        _productService.AddStockQuantityHistoryEntry(product, existingPwI.StockQuantity - previousStockQuantity, existingPwI.StockQuantity,
-                            existingPwI.WarehouseId, message);
-                    }
-                    else
-                    {
-                        // delete. no need to store record for qty 0
-                        _productService.DeleteProductWarehouseInventory(existingPwI);
-
-                        // quantity change history
-                        _productService.AddStockQuantityHistoryEntry(product, -existingPwI.StockQuantity, 0, existingPwI.WarehouseId, message);
-                    }
-                }
-                else
-                {
-                    if (used)
-                    {
-                        // no need to insert a record for qty 0
-                        existingPwI = new ProductWarehouseInventory
-                        {
-                            WarehouseId = warehouse.Id,
-                            ProductId = product.Id,
-                            StockQuantity = stockQuantity,
-                            ReservedQuantity = reservedQuantity
-                        };
-                        product.ProductWarehouseInventory.Add(existingPwI);
-                        _productService.UpdateProduct(product);
-
-                        // quantity change history
-                        _productService.AddStockQuantityHistoryEntry(product, existingPwI.StockQuantity, existingPwI.StockQuantity,
-                            existingPwI.WarehouseId, message);
-                    }
-                }
-            }
-        }
         #endregion
 
         #region Methods
 
-        #region Product list / create / edit / delete
+        #region Material list / create / edit / delete
 
         // list materials
         public virtual IActionResult Index()
@@ -278,6 +203,11 @@ namespace Nop.Web.Areas.Admin.Controllers
             foreach (var wh in _shippingService.GetAllWarehouses())
                 model.AvailableWarehouses.Add(new SelectListItem { Text = wh.Name, Value = wh.Id.ToString() });
 
+            // suppliers
+            model.AvailableSuppliers.Add(new SelectListItem { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
+            foreach (var sup in _supplierService.SearchSuppliers(showHidden: true))
+                model.AvailableSuppliers.Add(new SelectListItem { Text = sup.Name, Value = sup.Id.ToString() });
+
             return View("~/Plugins/Xrms.MaterialAdmin/Areas/Admin/Views/Material/List.cshtml", model);
         }
 
@@ -292,7 +222,7 @@ namespace Nop.Web.Areas.Admin.Controllers
             if (model.SearchIncludeSubGroup && model.SearchMaterialGroupId > 0)
                 categoryIds.AddRange(GetChildGroupIds(model.SearchMaterialGroupId));
 
-            var products = _materialService.SearchMaterials(
+            var materials = _materialService.SearchMaterials(
                 groupIds: categoryIds,
                 warehouseId: model.SearchWarehouseId,
                 keywords: model.SearchMaterialName,
@@ -302,19 +232,19 @@ namespace Nop.Web.Areas.Admin.Controllers
             );
             var gridModel = new DataSourceResult
             {
-                Data = products.Select(x =>
+                Data = materials.Select(x =>
                 {
-                    var productModel = x.ToListItemViewModel();
+                    var materialModel = x.ToListItemViewModel();
 
                     // group
-                    productModel.Group = x.MaterialGroup.GetFormattedBreadCrumb(_materialGroupService);
+                    materialModel.Group = x.MaterialGroup.GetFormattedBreadCrumb(_materialGroupService);
 
                     // picture
-                    productModel.PictureThumbnailUrl = _pictureService.GetPictureUrl(x.PictureId, 75, true);
+                    materialModel.PictureThumbnailUrl = _pictureService.GetPictureUrl(x.PictureId, 75, true);
 
-                    return productModel;
+                    return materialModel;
                 }),
-                Total = products.TotalCount
+                Total = materials.TotalCount
             };
 
             return Json(gridModel);
@@ -327,7 +257,10 @@ namespace Nop.Web.Areas.Admin.Controllers
                 return AccessDeniedView();
 
             var model = new MaterialDetailsPageViewModel();
+            // groups
             PrepareAvailableMaterialGroups(model);
+            // warehouses
+            PrepareAvailableWarehouses(model);
 
             return View("~/Plugins/Xrms.MaterialAdmin/Areas/Admin/Views/Material/Create.cshtml", model);
         }
@@ -338,42 +271,28 @@ namespace Nop.Web.Areas.Admin.Controllers
             if (!_permissionService.Authorize(XrmsPermissionProvider.ManageMaterials))
                 return AccessDeniedView();
 
-            //validate maximum number of products per vendor
-            /*if (_vendorSettings.MaximumProductNumber > 0 &&
-                _workContext.CurrentVendor != null &&
-                _productService.GetNumberOfProductsByVendorId(_workContext.CurrentVendor.Id) >= _vendorSettings.MaximumProductNumber)
-            {
-                ErrorNotification(string.Format(_localizationService.GetResource("Admin.Catalog.Products.ExceededMaximumNumber"), _vendorSettings.MaximumProductNumber));
-                return RedirectToAction("List");
-            }*/
-
             if (ModelState.IsValid)
             {
-                //a vendor should have access only to his products
+                //a vendor should have access only to his materials
                 /*if (_workContext.CurrentVendor != null)
                 {
                     model.VendorId = _workContext.CurrentVendor.Id;
                 }*/
 
-                //product
+                //material
                 var material = model.ToEntity();
                 material.CreatedOnUtc = DateTime.UtcNow;
                 material.UpdatedOnUtc = DateTime.UtcNow;
                 _materialService.InsertMaterial(material);
 
-                //manufacturers
-                //SaveManufacturerMappings(product, model);
-                //warehouses
-                //SaveProductWarehouseInventory(product, model);
+                // quantity change history
+                _materialService.AddStockQuantityHistoryEntry(material, material.StockQuantity, material.StockQuantity, material.WarehouseId,
+                    _localizationService.GetResource("Xrms.Admin.Catalog.Materials.StockQuantityHistory.Messages.Edit"));
 
-                //quantity change history
-                //_productService.AddStockQuantityHistoryEntry(product, product.StockQuantity, product.StockQuantity, product.WarehouseId,
-                    //_localizationService.GetResource("Admin.StockQuantityHistory.Messages.Edit"));
+                // activity log
+                _customerActivityService.InsertActivity("AddNewMaterial", _localizationService.GetResource("Xrms.ActivityLog.AddNewMaterial"), material.Name);
 
-                //activity log
-                _customerActivityService.InsertActivity("AddNewMaterial", _localizationService.GetResource("ActivityLog.AddNewMaterial"), material.Name);
-
-                SuccessNotification(_localizationService.GetResource("Admin.Catalog.Materials.Added"));
+                SuccessNotification(_localizationService.GetResource("Xrms.Admin.Catalog.Materials.Notifications.Added"));
 
                 if (continueEditing)
                 {
@@ -393,11 +312,13 @@ namespace Nop.Web.Areas.Admin.Controllers
 
             // groups
             PrepareAvailableMaterialGroups(viewModel);
+            // warehouses
+            PrepareAvailableWarehouses(viewModel);
 
             return View("~/Plugins/Xrms.MaterialAdmin/Areas/Admin/Views/MaterialGroup/Create.cshtml", viewModel);
         }
 
-        //edit product
+        //edit material
         public virtual IActionResult Edit(int id)
         {
             if (!_permissionService.Authorize(XrmsPermissionProvider.ManageMaterials))
@@ -411,6 +332,8 @@ namespace Nop.Web.Areas.Admin.Controllers
             var viewModel = material.ToDetailsViewModel();
             // groups
             PrepareAvailableMaterialGroups(viewModel);
+            // warehouses
+            PrepareAvailableWarehouses(viewModel);
 
             return View("~/Plugins/Xrms.MaterialAdmin/Areas/Admin/Views/Material/Edit.cshtml", viewModel);
         }
@@ -427,39 +350,29 @@ namespace Nop.Web.Areas.Admin.Controllers
                 //No material found with the specified id
                 return RedirectToAction("List");
 
-            //check if the product quantity has been changed while we were editing the product
+            //check if the material quantity has been changed while we were editing the material
             //and if it has been changed then we show error notification
             //and redirect on the editing page without data saving
-            /*if (product.StockQuantity != model.LastStockQuantity)
+            /*if (material.StockQuantity != model.LastStockQuantity)
             {
-                ErrorNotification(_localizationService.GetResource("Admin.Catalog.Products.Fields.StockQuantity.ChangedWarning"));
-                return RedirectToAction("Edit", new { id = product.Id });
+                ErrorNotification(_localizationService.GetResource("Admin.Catalog.Materials.Fields.StockQuantity.ChangedWarning"));
+                return RedirectToAction("Edit", new { id = material.Id });
             }*/
 
             if (ModelState.IsValid)
             {
-
                 //some previously used values
-                /*var prevTotalStockQuantity = product.GetTotalStockQuantity();
-                var prevDownloadId = product.DownloadId;
-                var prevSampleDownloadId = product.SampleDownloadId;
-                var previousStockQuantity = product.StockQuantity;
-                var previousWarehouseId = product.WarehouseId;*/
+                var previousWarehouseId = material.WarehouseId;
+                var previousStockQuantity = material.StockQuantity;
 
                 //material
                 material = model.ToEntity(material);
 
                 material.UpdatedOnUtc = DateTime.UtcNow;
                 _materialService.UpdateMaterial(material);
-                /*
-                //warehouses
-                SaveProductWarehouseInventory(product, model);
-
-                //manufacturers
-                SaveManufacturerMappings(product, model);
-
-                //quantity change history
-                if (previousWarehouseId != product.WarehouseId)
+                
+                // quantity change history
+                if (previousWarehouseId != material.WarehouseId)
                 {
                     //warehouse is changed 
                     //compose a message
@@ -468,32 +381,32 @@ namespace Nop.Web.Areas.Admin.Controllers
                     {
                         var oldWarehouse = _shippingService.GetWarehouseById(previousWarehouseId);
                         if (oldWarehouse != null)
-                            oldWarehouseMessage = string.Format(_localizationService.GetResource("Admin.StockQuantityHistory.Messages.EditWarehouse.Old"), oldWarehouse.Name);
+                            oldWarehouseMessage = string.Format(_localizationService.GetResource("Xrms.Admin.Catalog.Materials.StockQuantityHistory.Messages.EditWarehouse.Old"), oldWarehouse.Name);
                     }
                     var newWarehouseMessage = string.Empty;
-                    if (product.WarehouseId > 0)
+                    if (material.WarehouseId > 0)
                     {
-                        var newWarehouse = _shippingService.GetWarehouseById(product.WarehouseId);
+                        var newWarehouse = _shippingService.GetWarehouseById(material.WarehouseId);
                         if (newWarehouse != null)
-                            newWarehouseMessage = string.Format(_localizationService.GetResource("Admin.StockQuantityHistory.Messages.EditWarehouse.New"), newWarehouse.Name);
+                            newWarehouseMessage = string.Format(_localizationService.GetResource("Xrms.Admin.Catalog.Materials.StockQuantityHistory.Messages.EditWarehouse.New"), newWarehouse.Name);
                     }
-                    var message = string.Format(_localizationService.GetResource("Admin.StockQuantityHistory.Messages.EditWarehouse"), oldWarehouseMessage, newWarehouseMessage);
+                    var message = string.Format(_localizationService.GetResource("Xrms.Admin.Catalog.Materials.StockQuantityHistory.Messages.EditWarehouse"), oldWarehouseMessage, newWarehouseMessage);
 
                     //record history
-                    _productService.AddStockQuantityHistoryEntry(product, -previousStockQuantity, 0, previousWarehouseId, message);
-                    _productService.AddStockQuantityHistoryEntry(product, product.StockQuantity, product.StockQuantity, product.WarehouseId, message);
+                    _materialService.AddStockQuantityHistoryEntry(material, -previousStockQuantity, 0, previousWarehouseId, message);
+                    _materialService.AddStockQuantityHistoryEntry(material, material.StockQuantity, material.StockQuantity, material.WarehouseId, message);
 
                 }
                 else
                 {
-                    _productService.AddStockQuantityHistoryEntry(product, product.StockQuantity - previousStockQuantity, product.StockQuantity,
-                        product.WarehouseId, _localizationService.GetResource("Admin.StockQuantityHistory.Messages.Edit"));
+                    _materialService.AddStockQuantityHistoryEntry(material, material.StockQuantity - previousStockQuantity, material.StockQuantity,
+                        material.WarehouseId, _localizationService.GetResource("Xrms.Admin.Catalog.Materials.StockQuantityHistory.Messages.Edit"));
                 }
-                */
-                //activity log
-                _customerActivityService.InsertActivity("EditMaterial", _localizationService.GetResource("ActivityLog.EditMaterial"), material.Name);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Catalog.Materials.Updated"));
+                //activity log
+                _customerActivityService.InsertActivity("EditMaterial", _localizationService.GetResource("Xrms.ActivityLog.EditMaterial"), material.Name);
+
+                SuccessNotification(_localizationService.GetResource("Xrms.Admin.Catalog.Materials.Notifications.Updated"));
 
                 if (continueEditing)
                 {
@@ -510,68 +423,67 @@ namespace Nop.Web.Areas.Admin.Controllers
             model.ToDetailsViewModel(viewModel);
             // groups
             PrepareAvailableMaterialGroups(viewModel);
+            // warehouses
+            PrepareAvailableWarehouses(viewModel);
 
             return View("~/Plugins/Xrms.MaterialAdmin/Areas/Admin/Views/MaterialGroup/Edit.cshtml", viewModel);
         }
 
-        //delete product
+        //delete material
         [HttpPost]
         public virtual IActionResult Delete(int id)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageProducts))
+            if (!_permissionService.Authorize(XrmsPermissionProvider.ManageMaterials))
                 return AccessDeniedView();
 
-            var product = _productService.GetProductById(id);
-            if (product == null)
-                //No product found with the specified id
+            var material = _materialService.GetMaterialById(id);
+            if (material == null)
+                //No material found with the specified id
                 return RedirectToAction("List");
 
-            //a vendor should have access only to his products
-            if (_workContext.CurrentVendor != null && product.VendorId != _workContext.CurrentVendor.Id)
-                return RedirectToAction("List");
 
-            _productService.DeleteProduct(product);
+            _materialService.DeleteMaterial(material);
 
             //activity log
-            _customerActivityService.InsertActivity("DeleteProduct", _localizationService.GetResource("ActivityLog.DeleteProduct"), product.Name);
+            _customerActivityService.InsertActivity("DeleteMaterial", _localizationService.GetResource("Xrms.ActivityLog.DeleteMaterial"), material.Name);
 
-            SuccessNotification(_localizationService.GetResource("Admin.Catalog.Products.Deleted"));
+            SuccessNotification(_localizationService.GetResource("Xrms.Admin.Catalog.Materials.Notifications.Deleted"));
             return RedirectToAction("List");
         }
 
         [HttpPost]
         public virtual IActionResult DeleteSelected(ICollection<int> selectedIds)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageProducts))
+            if (!_permissionService.Authorize(XrmsPermissionProvider.ManageMaterials))
                 return AccessDeniedView();
 
             if (selectedIds != null)
             {
-                _productService.DeleteProducts(_productService.GetProductsByIds(selectedIds.ToArray()).Where(p => _workContext.CurrentVendor == null || p.VendorId == _workContext.CurrentVendor.Id).ToList());
+                _materialService.DeleteMaterials(_materialService.GetMaterialsByIds(selectedIds.ToArray()));
             }
 
             return Json(new { Result = true });
         }
 
         [HttpPost]
-        public virtual IActionResult CopyProduct(ProductModel model)
+        /*public virtual IActionResult CopyMaterial(MaterialModel model)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageProducts))
+            if (!_permissionService.Authorize(XrmsPermissionProvider.ManageMaterials))
                 return AccessDeniedView();
 
-            var copyModel = model.CopyProductModel;
+            var copyModel = model.CopyMaterialModel;
             try
             {
-                var originalProduct = _productService.GetProductById(copyModel.Id);
+                var originalMaterial = _materialService.GetMaterialById(copyModel.Id);
 
-                //a vendor should have access only to his products
-                if (_workContext.CurrentVendor != null && originalProduct.VendorId != _workContext.CurrentVendor.Id)
+                //a vendor should have access only to his materials
+                if (_workContext.CurrentVendor != null && originalMaterial.VendorId != _workContext.CurrentVendor.Id)
                     return RedirectToAction("List");
 
-                var newProduct = _copyProductService.CopyProduct(originalProduct,
+                var newMaterial = _copyMaterialService.CopyMaterial(originalMaterial,
                     copyModel.Name, copyModel.Published, copyModel.CopyImages);
-                SuccessNotification(_localizationService.GetResource("Admin.Catalog.Products.Copied"));
-                return RedirectToAction("Edit", new { id = newProduct.Id });
+                SuccessNotification(_localizationService.GetResource("Xrms.Admin.Catalog.Materials.Notifications.Copied"));
+                return RedirectToAction("Edit", new { id = newMaterial.Id });
             }
             catch (Exception exc)
             {
@@ -579,176 +491,16 @@ namespace Nop.Web.Areas.Admin.Controllers
                 return RedirectToAction("Edit", new { id = copyModel.Id });
             }
         }
-
+        */
         #endregion
-
-        #region Product pictures
-
-        public virtual IActionResult ProductPictureAdd(int pictureId, int displayOrder,
-            string overrideAltAttribute, string overrideTitleAttribute,
-            int productId)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageProducts))
-                return AccessDeniedView();
-
-            if (pictureId == 0)
-                throw new ArgumentException();
-
-            var product = _productService.GetProductById(productId);
-            if (product == null)
-                throw new ArgumentException("No product found with the specified id");
-
-            //a vendor should have access only to his products
-            if (_workContext.CurrentVendor != null && product.VendorId != _workContext.CurrentVendor.Id)
-                return RedirectToAction("List");
-
-            var picture = _pictureService.GetPictureById(pictureId);
-            if (picture == null)
-                throw new ArgumentException("No picture found with the specified id");
-
-            _pictureService.UpdatePicture(picture.Id,
-                _pictureService.LoadPictureBinary(picture),
-                picture.MimeType,
-                picture.SeoFilename,
-                overrideAltAttribute,
-                overrideTitleAttribute);
-
-            _pictureService.SetSeoFilename(pictureId, _pictureService.GetPictureSeName(product.Name));
-
-            _productService.InsertProductPicture(new ProductPicture
-            {
-                PictureId = pictureId,
-                ProductId = productId,
-                DisplayOrder = displayOrder,
-            });
-
-            return Json(new { Result = true });
-        }
-
-        [HttpPost]
-        public virtual IActionResult ProductPictureList(DataSourceRequest command, int productId)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageProducts))
-                return AccessDeniedKendoGridJson();
-
-            //a vendor should have access only to his products
-            if (_workContext.CurrentVendor != null)
-            {
-                var product = _productService.GetProductById(productId);
-                if (product != null && product.VendorId != _workContext.CurrentVendor.Id)
-                {
-                    return Content("This is not your product");
-                }
-            }
-
-            var productPictures = _productService.GetProductPicturesByProductId(productId);
-            var productPicturesModel = productPictures
-                .Select(x =>
-                {
-                    var picture = _pictureService.GetPictureById(x.PictureId);
-                    if (picture == null)
-                        throw new Exception("Picture cannot be loaded");
-                    var m = new ProductModel.ProductPictureModel
-                    {
-                        Id = x.Id,
-                        ProductId = x.ProductId,
-                        PictureId = x.PictureId,
-                        PictureUrl = _pictureService.GetPictureUrl(picture),
-                        OverrideAltAttribute = picture.AltAttribute,
-                        OverrideTitleAttribute = picture.TitleAttribute,
-                        DisplayOrder = x.DisplayOrder
-                    };
-                    return m;
-                })
-                .ToList();
-
-            var gridModel = new DataSourceResult
-            {
-                Data = productPicturesModel,
-                Total = productPicturesModel.Count
-            };
-
-            return Json(gridModel);
-        }
-
-        [HttpPost]
-        public virtual IActionResult ProductPictureUpdate(ProductModel.ProductPictureModel model)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageProducts))
-                return AccessDeniedView();
-
-            var productPicture = _productService.GetProductPictureById(model.Id);
-            if (productPicture == null)
-                throw new ArgumentException("No product picture found with the specified id");
-
-            //a vendor should have access only to his products
-            if (_workContext.CurrentVendor != null)
-            {
-                var product = _productService.GetProductById(productPicture.ProductId);
-                if (product != null && product.VendorId != _workContext.CurrentVendor.Id)
-                {
-                    return Content("This is not your product");
-                }
-            }
-
-            var picture = _pictureService.GetPictureById(productPicture.PictureId);
-            if (picture == null)
-                throw new ArgumentException("No picture found with the specified id");
-
-            _pictureService.UpdatePicture(picture.Id,
-                _pictureService.LoadPictureBinary(picture),
-                picture.MimeType,
-                picture.SeoFilename,
-                model.OverrideAltAttribute,
-                model.OverrideTitleAttribute);
-
-            productPicture.DisplayOrder = model.DisplayOrder;
-            _productService.UpdateProductPicture(productPicture);
-
-            return new NullJsonResult();
-        }
-
-        [HttpPost]
-        public virtual IActionResult ProductPictureDelete(int id)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageProducts))
-                return AccessDeniedView();
-
-            var productPicture = _productService.GetProductPictureById(id);
-            if (productPicture == null)
-                throw new ArgumentException("No product picture found with the specified id");
-
-            var productId = productPicture.ProductId;
-
-            //a vendor should have access only to his products
-            if (_workContext.CurrentVendor != null)
-            {
-                var product = _productService.GetProductById(productId);
-                if (product != null && product.VendorId != _workContext.CurrentVendor.Id)
-                {
-                    return Content("This is not your product");
-                }
-            }
-            var pictureId = productPicture.PictureId;
-            _productService.DeleteProductPicture(productPicture);
-
-            var picture = _pictureService.GetPictureById(pictureId);
-            if (picture == null)
-                throw new ArgumentException("No picture found with the specified id");
-            _pictureService.DeletePicture(picture);
-
-            return new NullJsonResult();
-        }
-
-        #endregion
-
+        /*
         #region Export / Import
 
         [HttpPost, ActionName("List")]
         [FormValueRequired("download-catalog-pdf")]
         public virtual IActionResult DownloadCatalogAsPdf(ProductListModel model)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageProducts))
+            if (!_permissionService.Authorize(XrmsPermissionProvider.ManageProducts))
                 return AccessDeniedView();
 
             //a vendor should have access only to his products
@@ -804,7 +556,7 @@ namespace Nop.Web.Areas.Admin.Controllers
         [FormValueRequired("exportxml-all")]
         public virtual IActionResult ExportXmlAll(ProductListModel model)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageProducts))
+            if (!_permissionService.Authorize(XrmsPermissionProvider.ManageProducts))
                 return AccessDeniedView();
 
             //a vendor should have access only to his products
@@ -855,7 +607,7 @@ namespace Nop.Web.Areas.Admin.Controllers
         [HttpPost]
         public virtual IActionResult ExportXmlSelected(string selectedIds)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageProducts))
+            if (!_permissionService.Authorize(XrmsPermissionProvider.ManageProducts))
                 return AccessDeniedView();
 
             var products = new List<Product>();
@@ -882,7 +634,7 @@ namespace Nop.Web.Areas.Admin.Controllers
         [FormValueRequired("exportexcel-all")]
         public virtual IActionResult ExportExcelAll(ProductListModel model)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageProducts))
+            if (!_permissionService.Authorize(XrmsPermissionProvider.ManageProducts))
                 return AccessDeniedView();
 
             //a vendor should have access only to his products
@@ -932,7 +684,7 @@ namespace Nop.Web.Areas.Admin.Controllers
         [HttpPost]
         public virtual IActionResult ExportExcelSelected(string selectedIds)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageProducts))
+            if (!_permissionService.Authorize(XrmsPermissionProvider.ManageProducts))
                 return AccessDeniedView();
 
             var products = new List<Product>();
@@ -958,7 +710,7 @@ namespace Nop.Web.Areas.Admin.Controllers
         [HttpPost]
         public virtual IActionResult ImportExcel(IFormFile importexcelfile)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageProducts))
+            if (!_permissionService.Authorize(XrmsPermissionProvider.ManageProducts))
                 return AccessDeniedView();
             
             //if (_workContext.CurrentVendor != null && !_vendorSettings.AllowVendorsToImportProducts)
@@ -988,12 +740,12 @@ namespace Nop.Web.Areas.Admin.Controllers
         }
 
         #endregion
-
+        
         #region Low stock reports
 
         public virtual IActionResult LowStockReport()
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageProducts))
+            if (!_permissionService.Authorize(XrmsPermissionProvider.ManageProducts))
                 return AccessDeniedView();
 
             return View();
@@ -1002,7 +754,7 @@ namespace Nop.Web.Areas.Admin.Controllers
         [HttpPost]
         public virtual IActionResult LowStockReportList(DataSourceRequest command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageProducts))
+            if (!_permissionService.Authorize(XrmsPermissionProvider.ManageProducts))
                 return AccessDeniedKendoGridJson();
 
             var vendorId = 0;
@@ -1052,30 +804,26 @@ namespace Nop.Web.Areas.Admin.Controllers
         }
 
         #endregion
-
+        */
         #region Stock quantity history
 
         [HttpPost]
-        public virtual IActionResult StockQuantityHistory(DataSourceRequest command, int productId, int warehouseId)
+        public virtual IActionResult StockQuantityHistory(DataSourceRequest command, MaterialDetailsPageViewModel.StockQuantityHistorySearchModel searchModel)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageProducts))
+            if (!_permissionService.Authorize(XrmsPermissionProvider.ManageMaterials))
                 return AccessDeniedKendoGridJson();
 
-            var product = _productService.GetProductById(productId);
-            if (product == null)
-                throw new ArgumentException("No product found with the specified id");
+            var material = _materialService.GetMaterialById(searchModel.MaterialId);
+            if (material == null)
+                throw new ArgumentException("No material found with the specified id");
 
-            //a vendor should have access only to his products
-            if (_workContext.CurrentVendor != null && product.VendorId != _workContext.CurrentVendor.Id)
-                return Content("This is not your product");
-
-            var stockQuantityHistory = _productService.GetStockQuantityHistory(product, warehouseId, pageIndex: command.Page - 1, pageSize: command.PageSize);
+            var stockQuantityHistory = _materialService.GetStockQuantityHistory(material, searchModel.WarehouseId, pageIndex: command.Page - 1, pageSize: command.PageSize);
 
             var gridModel = new DataSourceResult
             {
                 Data = stockQuantityHistory.Select(historyEntry =>
                 {
-                    var warehouseName = _localizationService.GetResource("Admin.Catalog.Products.Fields.Warehouse.None");
+                    var warehouseName = _localizationService.GetResource("Admin.Catalog.Materials.Fields.Warehouse.None");
                     if (historyEntry.WarehouseId.HasValue)
                     {
                         var warehouse = _shippingService.GetWarehouseById(historyEntry.WarehouseId.Value);
@@ -1085,12 +833,12 @@ namespace Nop.Web.Areas.Admin.Controllers
                     /*var attributesXml = string.Empty;
                     if (historyEntry.CombinationId.HasValue)
                     {
-                        var combination = _productAttributeService.GetProductAttributeCombinationById(historyEntry.CombinationId.Value);
+                        var combination = _materialAttributeService.GetMaterialAttributeCombinationById(historyEntry.CombinationId.Value);
                         attributesXml = combination == null ? string.Empty :
-                            _productAttributeFormatter.FormatAttributes(historyEntry.Product, combination.AttributesXml, _workContext.CurrentCustomer, renderGiftCardAttributes: false);
+                            _materialAttributeFormatter.FormatAttributes(historyEntry.Material, combination.AttributesXml, _workContext.CurrentCustomer, renderGiftCardAttributes: false);
                     }*/
 
-                    return new ProductModel.StockQuantityHistoryModel
+                    return new MaterialDetailsPageViewModel.StockQuantityHistoryListItemViewModel
                     {
                         Id = historyEntry.Id,
                         QuantityAdjustment = historyEntry.QuantityAdjustment,

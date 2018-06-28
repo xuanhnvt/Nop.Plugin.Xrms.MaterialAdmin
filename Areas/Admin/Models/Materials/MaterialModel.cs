@@ -41,6 +41,9 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Areas.Admin.Models.Materials
         [NopResourceDisplayName("Xrms.Admin.Catalog.Materials.Fields.Supplier")]
         public int SupplierId { get; set; }
 
+        [NopResourceDisplayName("Xrms.Admin.Catalog.Materials.Fields.ManageInventoryMethod")]
+        public int ManageInventoryMethodId { get; set; }
+
         [NopResourceDisplayName("Xrms.Admin.Catalog.Materials.Fields.Warehouse")]
         public int WarehouseId { get; set; }
 

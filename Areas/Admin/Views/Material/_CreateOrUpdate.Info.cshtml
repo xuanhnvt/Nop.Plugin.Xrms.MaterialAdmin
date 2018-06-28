@@ -26,25 +26,16 @@
                 </div>
                 <div class="panel-body">
                     @if (Model.Id > 0)
-    {
-                <div class="form-group advanced-setting">
-                    <div class="col-md-3">
-                        <nop-label asp-for="Id" />
-                    </div>
-                    <div class="col-md-9">
-                        <div class="form-text-row">@Model.Id</div>
-                    </div>
-                </div>
-}
-                    <div class="form-group">
-                        <div class="col-md-3">
-                            <nop-label asp-for="Code" />
+                    {
+                        <div class="form-group advanced-setting">
+                            <div class="col-md-3">
+                                <nop-label asp-for="Id" />
+                            </div>
+                            <div class="col-md-9">
+                                <div class="form-text-row">@Model.Id</div>
+                            </div>
                         </div>
-                        <div class="col-md-9">
-                            <span asp-validation-for="Code"></span>
-                        </div>
-                    </div>
-
+                    }
                     <div class="form-group">
                         <div class="col-md-3">
                             <nop-label asp-for="Name" />
@@ -56,11 +47,21 @@
                     </div>
                     <div class="form-group">
                         <div class="col-md-3">
+                            <nop-label asp-for="Code" />
+                        </div>
+                        <div class="col-md-9">
+                            <nop-editor asp-for="Code">
+                                <span asp-validation-for="Code"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-3">
                             <nop-label asp-for="Unit" />
                         </div>
                         <div class="col-md-9">
                             <nop-editor asp-for="Unit">
-                            <span asp-validation-for="Unit"></span>
+                                <span asp-validation-for="Unit"></span>
                         </div>
                     </div>
                     <div class="form-group">
@@ -149,6 +150,15 @@
                     @T("Xrms.Admin.Catalog.Materials.Details.Tabs.Info.Sections.Inventory")
                 </div>
                 <div class="panel-body">
+                    <div class="form-group">
+                        <div class="@leftColumnClass">
+                            <nop-label asp-for="ManageInventoryMethodId" />
+                        </div>
+                        <div class="@rightColumnClass">
+                            <nop-select asp-for="ManageInventoryMethodId" asp-items="@(((ManageInventoryMethod)Model.ManageInventoryMethodId).ToSelectList())" />
+                            <span asp-validation-for="ManageInventoryMethodId"></span>
+                        </div>
+                    </div>
                     <div class="form-group" id="pnlStockQuantity">
                         <div class="@leftColumnClass">
                             <nop-label asp-for="StockQuantity" />
