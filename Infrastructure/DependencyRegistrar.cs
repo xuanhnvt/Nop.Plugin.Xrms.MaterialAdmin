@@ -35,6 +35,11 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Infrastructure
             .WithParameter(ResolvedParameter.ForNamed<IDbContext>(CONTEXT_NAME))
             .InstancePerLifetimeScope();
 
+            builder.RegisterType<EfRepository<ProductRecipe>>()
+            .As<IRepository<ProductRecipe>>()
+            .WithParameter(ResolvedParameter.ForNamed<IDbContext>(CONTEXT_NAME))
+            .InstancePerLifetimeScope();
+
             builder.RegisterType<EfRepository<MaterialQuantityHistory>>()
             .As<IRepository<MaterialQuantityHistory>>()
             .WithParameter(ResolvedParameter.ForNamed<IDbContext>(CONTEXT_NAME))

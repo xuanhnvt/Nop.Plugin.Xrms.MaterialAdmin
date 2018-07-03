@@ -17,6 +17,7 @@
   </Target>
   <ItemGroup>
     <None Remove="Areas\Admin\Views\Material\_CreateOrUpdate._StockQuantityHistory.cshtml" />
+    <None Remove="Areas\Admin\Views\Material\_TabEditProduct.Recipe.cshtml" />
     <None Remove="Areas\Admin\Views\Supplier\List.cshtml" />
     <None Remove="Areas\Admin\Views\MaterialGroup\AddMaterialsPopup.cshtml" />
     <None Remove="Areas\Admin\Views\MaterialGroup\Create.cshtml" />
@@ -34,6 +35,10 @@
     <None Remove="Areas\Admin\Views\_ViewImports.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Areas\Admin\Views\Material\_TabEditProduct.Recipe.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
     <Content Include="Areas\Admin\Views\Material\_CreateOrUpdate._StockQuantityHistory.cshtml">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <Pack>$(IncludeRazorContentInPack)</Pack>

@@ -14,7 +14,7 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Data.Mapping
         /// </summary>
         public MaterialQuantityHistoryMap()
         {
-            this.ToTable("MaterialQuantityHistory");
+            this.ToTable("XrmsMaterialQuantityHistory");
             this.HasKey(historyEntry => historyEntry.Id);
 
             this.HasRequired(historyEntry => historyEntry.Material)

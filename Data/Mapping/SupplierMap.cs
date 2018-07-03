@@ -13,9 +13,9 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Data.Mapping
         /// </summary>
         public SupplierMap()
         {
-            this.ToTable("Supplier");
-            this.HasKey(m => m.Id);
-            this.Property(m => m.Name).IsRequired().HasMaxLength(400);
+            this.ToTable("XrmsSupplier");
+            this.HasKey(s => s.Id);
+            this.Property(s => s.Name).IsRequired().HasMaxLength(400);
         }
     }
 }

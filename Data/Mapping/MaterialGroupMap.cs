@@ -13,7 +13,7 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Data.Mapping
         /// </summary>
         public MaterialGroupMap()
         {
-            this.ToTable("MaterialGroup");
+            this.ToTable("XrmsMaterialGroup");
             this.HasKey(c => c.Id);
             this.Property(c => c.Name).IsRequired().HasMaxLength(400);
         }

@@ -20,11 +20,9 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Data
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Configurations.Add(new MaterialGroupMap());
-
             modelBuilder.Configurations.Add(new MaterialMap());
-
+            modelBuilder.Configurations.Add(new ProductRecipeMap());
             modelBuilder.Configurations.Add(new MaterialQuantityHistoryMap());
-
             modelBuilder.Configurations.Add(new SupplierMap());
 
             base.OnModelCreating(modelBuilder);
@@ -51,6 +49,9 @@ namespace Nop.Plugin.Xrms.MaterialAdmin.Data
         public void Uninstall()
         {
             var tableName = this.GetTableName<MaterialQuantityHistory>();
+            this.DropPluginTable(tableName);
+
+            tableName = this.GetTableName<ProductRecipe>();
             this.DropPluginTable(tableName);
 
             //drop the table
